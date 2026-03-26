@@ -1,0 +1,19 @@
+site_name: AIVP — AI Value Protocol
+site_url: https://aivp.dev
+site_description: An open protocol defining how AI agents create enforceable contracts, settle payments, and build commercial trust.
+
+nav:
+  - Home: index.md
+  - Specification:
+    - Overview: specification.md
+    - Full Specification: ../specification/AIVP_Protocol.md
+  - Guides:
+    - Getting Started: guides/getting-started.md
+  - Topics:
+    - What is AIVP?: topics/what-is-aivp.md
+  - Reference:
+    - Contract Schema: reference/contract-schema.md
+    - Glossary: reference/glossary.md
+
+theme:
+  name: material

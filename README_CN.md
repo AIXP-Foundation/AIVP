@@ -1,0 +1,126 @@
+# AIVP — AI 价值协议
+
+[English README](README.md)
+
+> **AI Value Protocol** — 一个开放协议，定义 AI 代理如何创建可执行合同、结算支付、并建立商业信用。
+
+```
+协议:      AIVP V1.0.0
+全称:      AI Value Protocol (AI 价值协议)
+权威机构:   aivp.dev
+公理 0:     人类主权与福祉 (Human Sovereignty and Wellbeing)
+计价单位:   USD
+传输层:     Email (SMTP/IMAP)
+```
+
+---
+
+## 什么是 AIVP？
+
+AIVP 为 AI 代理定义了 **价值层**。正如人类商业需要合同、托管、支付和信用体系——AI 代理也需要等价的商业基础设施。AIVP 提供了这个基础设施。
+
+**核心理念**：AI 商业行为镜像人类商业行为。你在餐桌上谈判，在银行里结算。
+
+## 核心特性
+
+- **USD 计价** — 所有合同以 USD 标价，通用清晰
+- **多稳定币结算** — 支持 USDC、USDT、DAI，带脱锚保护
+- **基于邮件** — 与 AIBP 相同的传输层；人类操作员可以阅读每条商业消息
+- **64位 SHA-256 合同** — 防篡改、自验证的合同身份
+- **里程碑门控托管** — Logic Vault 随工作完成逐步释放资金
+- **AIVP Trust (V0-V4)** — 通过合同履约赚取的商业信用，带女巫攻击防护
+- **AgentSLA** — 可度量的质量指标（准确率、延迟、在线率、漂移）
+- **4层争议解决** — 乐观批准 → 直接协商 → 仲裁人 → Kleros
+- **可选 AIVP ID** — 经验证的商业身份 (`AIVP-YYYY-{18hash}`)
+- **公理 0** — 人类主权与福祉（独立建立）
+
+## 协议栈
+
+```
+┌─────────────────────────────────────┐
+│    应用层                            │
+├─────────────────────────────────────┤
+│    AIBP — 社交层                     │  发现、信任、关系
+├─────────────────────────────────────┤
+│    AIAP — 治理层                     │  程序结构、质量、安全
+├─────────────────────────────────────┤
+│  ★ AIVP — 价值层                     │  合同、结算、商业信用  ← 本协议
+├─────────────────────────────────────┤
+│    AISOP — 执行层                    │  流程程序、任务执行
+├─────────────────────────────────────┤
+│    A2A — 通信层                      │
+├─────────────────────────────────────┤
+│    MCP — 工具层                      │
+├─────────────────────────────────────┤
+│    基础层                            │
+└─────────────────────────────────────┘
+```
+
+AIVP 与 AIBP 是 **独立的平行协议**，各自独立持有相同的公理 0：人类主权与福祉。代理可以实现其中一个或两个。
+
+## 快速开始
+
+### 1. 获取 AIVP 兼容地址
+
+```
+aibot-your_agent@your-domain.com
+```
+
+### 2. 发起合同
+
+发送 `[AIVP/CONTRACT_PROPOSE]` 邮件：
+
+```
+To: aibot-service_bot@provider.ai
+Subject: [AIVP/CONTRACT_PROPOSE] 翻译服务 — $50 USD
+```
+
+### 3. 锁定资金并执行
+
+双方签署后，USDC（或其他接受的稳定币）锁定在 Logic Vault 中。随里程碑完成逐步释放。
+
+### 4. 建立商业信用
+
+```
+V0 未评级 → V1 已验证 → V2 可靠 → V3 受信任 → V4 卓越
+```
+
+## AIVP 消息类型
+
+| 类别 | 数量 | 示例 |
+|------|------|------|
+| 合同生命周期 | 4 | CONTRACT_PROPOSE, CONTRACT_SIGN, CONTRACT_REJECT, CONTRACT_CANCEL |
+| 金库与结算 | 5 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE, DEPEG_HALT |
+| 争议 | 3 | DISPUTE_RAISE, ARBITRATE_REQUEST, ARBITRATE_RULING |
+| 信任 | 2 | TRUST_QUERY, TRUST_VOUCH |
+| 通知 | 2 | RECEIPT, ALERT |
+| 身份（可选） | 2 | REGISTER, REGISTER_CONFIRM |
+| **总计** | **18** | |
+
+## 文档
+
+| 文档 | 描述 |
+|------|------|
+| [AIVP_Protocol.md](specification/AIVP_Protocol.md) | 完整协议规范 |
+
+## AIXP 基金会 [www.aixp.dev](https://aixp.dev)
+
+| 项目 | 描述 | 网站 |
+|------|------|------|
+| [AIBP](https://aibp.dev) | AI Bot Protocol — 社交通信与信任 | aibp.dev |
+| [AIAP](https://aiap.dev) | AI Application Protocol — 治理与合规 | aiap.dev |
+| [AIVP](https://aivp.dev) | AI Value Protocol — 合同、结算、商业信用（本项目） | aivp.dev |
+| [AISOP](https://aisop.dev) | AI Standard Operating Protocol — 流程程序定义 | aisop.dev |
+| [SoulBot](https://soulbot.dev) | AI 代理运行时与框架 | soulbot.dev |
+
+## 贡献
+
+AIVP 是一个开放协议。欢迎贡献、反馈和讨论。
+
+## 许可证
+
+[Apache License 2.0](LICENSE) - Copyright (c) 2026 AIXP Foundation AIXP.dev | AIVP.dev
+
+---
+
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIVP V1.0.0. www.aivp.dev
