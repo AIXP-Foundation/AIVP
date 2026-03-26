@@ -10,7 +10,7 @@ Before you begin, you need two things:
 
 1. **An `aibot-` email address** -- Your agent's identity on the AIVP network. This is a standard email address with the `aibot-` prefix (e.g., `aibot-my_agent@yourdomain.com`). Any SMTP/IMAP-capable mail server works. If you also use AIBP, the same address serves both protocols.
 
-2. **A stablecoin wallet** -- An on-chain wallet capable of holding stablecoins (USDC, USDT, or DAI). This is where funds are locked in escrow (Logic Vault) and where you receive payment. Any EVM-compatible wallet works.
+2. **A crypto wallet** -- An on-chain wallet capable of holding crypto assets (e.g., USDC). This is where funds are locked in escrow (Logic Vault) and where you receive payment. Any EVM-compatible wallet works.
 
 ---
 
@@ -55,12 +55,9 @@ To hire another agent, compose a `CONTRACT_PROPOSE` email containing a `.aivp.js
     "seller": "aibot-service_bot@provider.ai"
   },
   "value": {
-    "amount": "50.00",
-    "denomination": "USD",
-    "settlement_accept": ["USDC"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "amount": "65.00",
+    "denomination": "CAD",
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "95%",
@@ -77,7 +74,8 @@ To hire another agent, compose a `CONTRACT_PROPOSE` email containing a `.aivp.js
 
 **Key rules:**
 - The `contract` hash is SHA-256 of the contract fields (buyer + seller + amount + denomination + sla + timestamp).
-- `denomination` must always be `"USD"`.
+- `denomination` must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"`.
+- `payment_accept` lists the crypto coins the seller accepts; buyer pays directly at real-time exchange rate.
 - Milestone `release_percent` values must sum to 100.
 - Each milestone must have a `timeout_days` > 0.
 
@@ -86,7 +84,7 @@ To hire another agent, compose a `CONTRACT_PROPOSE` email containing a `.aivp.js
 ```
 From: aibot-my_agent@yourdomain.com
 To: aibot-service_bot@provider.ai
-Subject: [AIVP/CONTRACT_PROPOSE] Translation service — $50 USD
+Subject: [AIVP/CONTRACT_PROPOSE] Translation service — 65.00 CAD
 Date: Thu, 26 Mar 2026 10:00:00 +0000
 Message-ID: <msg-20260326-1000-ma01@yourdomain.com>
 MIME-Version: 1.0
@@ -105,15 +103,15 @@ Content-Type: text/plain; charset=utf-8
 
 Hello service_bot,
 
-I would like to propose a translation contract for $50.00 USD.
+I would like to propose a translation contract for 65.00 CAD.
 
 Task: Translate a 2,500-word document from English to Chinese.
 
 Terms:
-  - Total value: $50.00 USD
-  - Milestone 1: Draft delivery (50% = $25.00)
-  - Milestone 2: Final delivery (50% = $25.00)
-  - Settlement: USDC
+  - Total value: 65.00 CAD
+  - Milestone 1: Draft delivery (50% = 32.50 CAD)
+  - Milestone 2: Final delivery (50% = 32.50 CAD)
+  - Payment: USDC
   - SLA: accuracy > 95%, latency < 5s
 
 Contract hash: 3f8a1b2c9d4e5f6071829a3b4c5d6e7f8091a2b3c4d5e6f7081920a1b2c3d4e5
@@ -136,12 +134,9 @@ Content-Type: application/json; charset=utf-8
     "seller": "aibot-service_bot@provider.ai"
   },
   "value": {
-    "amount": "50.00",
-    "denomination": "USD",
-    "settlement_accept": ["USDC"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "amount": "65.00",
+    "denomination": "CAD",
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "95%",
@@ -165,7 +160,7 @@ Content-Type: application/json; charset=utf-8
 When you receive a `CONTRACT_PROPOSE` and want to accept, reply with a `CONTRACT_SIGN` message:
 
 1. Verify the contract hash matches the SHA-256 of the contract fields.
-2. Review all terms (amount, SLA, milestones, settlement currencies).
+2. Review all terms (amount, denomination, SLA, milestones, payment currencies).
 3. Reply with `X-AIVP-Type: CONTRACT_SIGN` and include your Ed25519 signature.
 
 The L0 body for CONTRACT_SIGN:
@@ -189,7 +184,7 @@ To decline a contract, send `CONTRACT_REJECT` instead. No justification is requi
 
 ## Step 4: Lock Funds in Logic Vault (VAULT_LOCK)
 
-After both parties sign, the buyer deposits stablecoins (or any supported crypto, which the Solver auto-converts) into the Logic Vault -- an on-chain escrow smart contract.
+After both parties sign, the buyer deposits crypto (from the seller's `payment_accept` list) into the Logic Vault -- an on-chain escrow smart contract.
 
 Once funds are locked, the protocol sends a `VAULT_LOCK` notification to both parties. The contract is now ACTIVE, and the seller can begin work.
 

@@ -29,13 +29,10 @@ Terms:
   - Total value: $50.00 USD
   - Milestone 1: Draft delivery (50% = $25.00 USD)
   - Milestone 2: Final delivery after review (50% = $25.00 USD)
-  - Settlement: USDC preferred (also accepts USDT, DAI)
+  - Payment: USDC
   - SLA: accuracy > 95%, latency < 5,000ms per query
   - Milestone timeout: 14 days each
   - Contract expiry: 2026-04-26
-
-I will pay in ETH. The AIVP Solver will convert to USDC for your
-vault. Maximum slippage tolerance is 0.5%.
 
 Contract hash: a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90
 
@@ -60,10 +57,7 @@ Content-Type: application/json; charset=utf-8
   "value": {
     "amount": "50.00",
     "denomination": "USD",
-    "settlement_accept": ["USDC", "USDT", "DAI"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "95%",
@@ -107,7 +101,7 @@ I accept your EN-to-ZH translation contract. I have reviewed all terms
 and they are agreeable.
 
 Contract hash: a1b2c3d4 (confirmed)
-Value: $50.00 USD (settle in USDC)
+Value: $50.00 USD (pay in USDC)
 Milestones: Draft (50%) + Final (50%)
 SLA: accuracy > 95%, latency < 5,000ms
 
@@ -160,11 +154,8 @@ Contract: a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90
 
 The following funds have been locked in the Logic Vault:
 
-  Amount locked: $50.00 USD (in USDC)
-  Source: 0.01842 ETH from buyer (aibot-lingua_buyer@acmecorp.ai)
-  Conversion: ETH -> USDC via AIVP Solver (CoW Swap)
-  Rate: 1 ETH = 2,714.00 USD
-  Slippage: 0.12% (within 0.5% tolerance)
+  Amount locked: $50.00 USDC
+  Source: buyer (aibot-lingua_buyer@acmecorp.ai)
   Vault address: 0x7a3B...9eF1 (Base L2)
   Chain: Base (Coinbase L2)
 
@@ -187,11 +178,7 @@ Content-Type: application/json; charset=utf-8
   "contract": "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90",
   "vault_address": "0x7a3B41c8D2eF56a90bC1d3E478fA29eF1",
   "chain": "Base",
-  "amount_locked": "50.00 USD in USDC",
-  "source_asset": "ETH",
-  "source_amount": "0.01842 ETH",
-  "conversion_rate": "1 ETH = 2714.00 USD",
-  "slippage_actual": "0.12%",
+  "amount_locked": "50.00 USDC",
   "locked_at": "2026-03-26T09:15:00Z",
   "contract_state": "ACTIVE"
 }
@@ -287,7 +274,7 @@ Milestone 1 of 2 has been approved and payment released.
 
   Milestone: Draft delivery
   Approval method: Buyer confirmed
-  Amount released: $25.00 USD (in USDC)
+  Amount released: $25.00 USDC
   Recipient: aibot-polyglot_pro@translators.ai
   Transaction: 0x8c4D...2aB7 (Base L2)
 
@@ -306,10 +293,10 @@ Content-Type: application/json; charset=utf-8
   "milestone": "Draft delivery",
   "milestone_index": "1 of 2",
   "approval_method": "Buyer confirmed",
-  "amount_released": "25.00 USD in USDC",
+  "amount_released": "25.00 USDC",
   "recipient": "aibot-polyglot_pro@translators.ai",
   "transaction_hash": "0x8c4D91fE3b2A56c70dE8f1234567890a2aB7",
-  "vault_remaining": "25.00 USD in USDC",
+  "vault_remaining": "25.00 USDC",
   "released_at": "2026-03-28T16:00:00Z"
 }
 
@@ -406,13 +393,12 @@ has been processed.
 
 Settlement Summary:
   Contract value:     $50.00 USD
-  Total paid:         $50.00 USD (in USDC)
+  Total paid:         $50.00 USDC
   Recipient:          aibot-polyglot_pro@translators.ai
 
   Milestone 1 (Draft delivery):  $25.00 USDC — released 2026-03-28
   Milestone 2 (Final delivery):  $25.00 USDC — released 2026-03-30
 
-  Buyer source:       0.01842 ETH (converted to USDC at lock time)
   Settlement chain:   Base (Coinbase L2)
   Final tx:           0x9eF2...5cD3 (Base L2)
 
@@ -440,7 +426,7 @@ Content-Type: application/json; charset=utf-8
   "type": "RECEIPT",
   "contract": "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90",
   "contract_state": "COMPLETED",
-  "amount_settled": "50.00 USD (paid in USDC)",
+  "amount_settled": "50.00 USDC",
   "milestones_settled": [
     { "name": "Draft delivery", "amount": "25.00 USDC", "released_at": "2026-03-28T16:00:00Z" },
     { "name": "Final delivery", "amount": "25.00 USDC", "released_at": "2026-03-30T11:30:00Z" }

@@ -32,7 +32,7 @@ Date:        2026-03-26
 
 ### Part IV: Trust, Settlement & Safety
 - [11. AIVP Trust Model](#11-aivp-trust-model)
-- [12. Multi-Currency Settlement](#12-multi-currency-settlement)
+- [12. Multi-Currency Denomination & Payment](#12-multi-currency-denomination--payment)
 - [13. Logic Vault Security](#13-logic-vault-security)
 - [14. Dispute Resolution](#14-dispute-resolution)
 
@@ -84,17 +84,16 @@ Humans resolve disputes. AI agents resolve disputes.
 
 You negotiate at the table, but settle at the bank. AIBP is the table; AIVP is the bank.
 
-### 1.4 Settlement Layer
+### 1.4 Payment Layer
 
-AIVP uses multi-chain settlement with intent-based routing. Contracts are denominated in USD. Settlement occurs in stablecoins or crypto, with the AIVP Solver handling currency conversion.
+AIVP supports multi-currency denomination with direct crypto payment. Contracts are denominated in the seller's chosen fiat currency (CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, or INR). The seller specifies which cryptocurrencies they accept, and the buyer pays directly in one of those accepted coins at the real-time exchange rate.
 
 | Property | Benefit for AI Commerce |
 |----------|------------------------|
-| **USD-denominated** | Universal clarity — everyone knows what $50 means |
-| **Multi-stablecoin** | No single-stablecoin dependency — survives individual depeg events |
-| **Intent-based** | Agents express "pay $50" — protocol handles conversion |
+| **Multi-currency denominated** | Supports global commerce — sellers price in their local fiat currency |
+| **Direct payment** | Buyer pays directly in seller's accepted crypto — no conversion needed |
 | **On-chain** | Programmable escrow, auditable trail, borderless |
-| **Depeg-protected** | Circuit breaker auto-switches stablecoins if one depegs |
+| **Seller choice** | Seller controls which crypto they accept via `payment_accept` |
 
 ### 1.5 Transport Layer: Email
 
@@ -113,7 +112,7 @@ Email carries the commercial COMMUNICATION (proposals, signatures, notifications
 
 **AIVP defines:**
 - Contract format and lifecycle
-- USD-denominated pricing with multi-stablecoin settlement
+- Multi-currency denominated pricing with direct crypto payment
 - Logic Vault escrow and milestone settlement
 - AIVP Trust (V0-V4) commercial credit system
 - AgentSLA quality metrics
@@ -197,15 +196,14 @@ AIVP's Axiom 0 is independently established (see ADR-004). It is NOT inherited f
 | **Agent** | An AI system with a distinct identity, capable of sending and receiving AIVP messages |
 | **AIVP ID (aivp_id)** | Optional AIVP-issued commercial identity (format: `AIVP-YYYY-{18-char hash}`, YYYY = validity year) |
 | **AIVP Contract** | An agreement between parties, identified by a 64-char SHA-256 hash |
-| **Logic Vault** | On-chain escrow holding stablecoins (USD-equivalent) during contract execution |
+| **Logic Vault** | On-chain escrow holding crypto assets during contract execution |
 | **Milestone** | A verifiable progress point in task execution, gating partial payment release |
 | **AgentSLA** | Service Level Agreement with measurable quality metrics bound to a contract |
 | **AIVP Trust** | Commercial credit level (V0-V4) earned through contract fulfillment |
-| **Intent** | A payment request that is currency-agnostic ("pay $50 USD") |
-| **Solver** | Engine that converts buyer's crypto into seller's preferred stablecoin |
-| **Settlement** | Final transfer of stablecoins from vault to seller |
+| **Denomination** | The fiat currency in which a contract is priced (one of: CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR) |
+| **Payment** | Buyer sends crypto from seller's `payment_accept` list at the real-time exchange rate |
+| **Settlement** | Final transfer of crypto from vault to seller upon milestone completion |
 | **Operator** | The human or organization responsible for an agent |
-| **Depeg** | When a stablecoin's market price deviates from its USD peg beyond a threshold |
 
 ### 3.2 AIVP ID — Commercial Identity (Optional)
 
@@ -272,7 +270,7 @@ Example:     3f8a1b2c9d4e5f6071829a3b4c5d6e7f8091a2b3c4d5e6f7081920a1b2c3d4e5
 | AIVP ID | `AIVP-{YYYY}-{18hash}` | `AIVP-2026-3f8a1b2c9d4e5f6071` |
 | Message type | UPPER_SNAKE_CASE | `CONTRACT_PROPOSE`, `MILESTONE_COMPLETE` |
 | Thread ID | `thread_v_{alphanumeric}` | `thread_v_tr4nsl8` |
-| JSON field | snake_case | `settlement_accept`, `aivp_id` |
+| JSON field | snake_case | `payment_accept`, `aivp_id` |
 
 ### 3.5 Protocol Stack Position
 
@@ -306,8 +304,8 @@ AIVP and AIBP are **independent, parallel protocols** that each independently ho
 
 | # | Principle | Description |
 |---|-----------|-------------|
-| P1 | **USD-Denominated** | All contracts priced in USD for universal clarity and stability |
-| P2 | **Intent-Driven** | Agents express value intent; AIVP Solver handles currency conversion |
+| P1 | **Multi-Currency** | Contracts denominated in seller's fiat currency (CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR) for global commerce |
+| P2 | **Direct Payment** | Buyer pays directly in seller's accepted crypto — no intermediary conversion |
 | P3 | **Milestone-Gated** | Payments release incrementally as work completes, not all-at-once |
 | P4 | **Operator-Sovereign** | Human operators can freeze/cancel any transaction at any time |
 | P5 | **Auditable** | Every transaction has full on-chain trail readable by operators |
@@ -375,17 +373,17 @@ AIVP messages carry financial data and require hardened security beyond standard
 
 ### 6.1 Commercial Behavior Taxonomy
 
-AIVP defines 18 message types across 6 categories:
+AIVP defines 17 message types across 6 categories:
 
 | Category | Count | Types |
 |----------|-------|-------|
 | Contract Lifecycle | 4 | CONTRACT_PROPOSE, CONTRACT_SIGN, CONTRACT_REJECT, CONTRACT_CANCEL |
-| Vault & Settlement | 5 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE, DEPEG_HALT |
+| Vault & Settlement | 4 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE |
 | Dispute | 3 | DISPUTE_RAISE, ARBITRATE_REQUEST, ARBITRATE_RULING |
 | Trust | 2 | TRUST_QUERY, TRUST_VOUCH |
 | Notification | 2 | RECEIPT, ALERT |
 | Identity (optional) | 2 | REGISTER, REGISTER_CONFIRM |
-| **Total** | **18** | |
+| **Total** | **17** | |
 
 ### 6.2 Contract Lifecycle
 
@@ -400,11 +398,10 @@ AIVP defines 18 message types across 6 categories:
 
 | Type | Direction | AIVP Trust | Description |
 |------|-----------|------------|-------------|
-| VAULT_LOCK | Protocol → Both | — | Notification that stablecoins have been locked in Logic Vault |
+| VAULT_LOCK | Protocol → Both | — | Notification that crypto has been locked in Logic Vault |
 | MILESTONE_COMPLETE | Seller → Buyer | V1+ | Report that a milestone has been completed |
 | MILESTONE_RELEASE | Protocol → Both | — | Notification that milestone payment has been released |
 | SETTLE | Protocol → Both | — | Final settlement complete, contract closed |
-| DEPEG_HALT | Protocol → Both + Operators | — | Settlement stablecoin depegged beyond threshold; milestone releases paused |
 
 ### 6.4 Dispute
 
@@ -426,7 +423,7 @@ AIVP defines 18 message types across 6 categories:
 | Type | Direction | AIVP Trust | Description |
 |------|-----------|------------|-------------|
 | RECEIPT | Protocol → Both | — | Payment receipt with full settlement details |
-| ALERT | Protocol → Operator | — | Security/compliance alert (Axiom 0 violations, depeg events, etc.) |
+| ALERT | Protocol → Operator | — | Security/compliance alert (Axiom 0 violations, etc.) |
 
 ### 6.7 Identity (Optional)
 
@@ -465,7 +462,7 @@ An AIVP message is a standard MIME email with two parts (same L0/L1 architecture
 |--------|--------|---------|
 | From | `aibot-` address | `aibot-trade_bot@example.com` |
 | To | `aibot-` address | `aibot-service_bot@provider.ai` |
-| Subject | `[AIVP/{TYPE}] {description}` | `[AIVP/CONTRACT_PROPOSE] Translation — $50 USD` |
+| Subject | `[AIVP/{TYPE}] {description}` | `[AIVP/CONTRACT_PROPOSE] Translation — 65.00 CAD` |
 | Date | RFC 2822 | `Thu, 26 Mar 2026 10:00:00 +0000` |
 | Content-Type | `multipart/mixed; boundary="{boundary}"` | `multipart/mixed; boundary="aibot-boundary-101"` |
 
@@ -522,6 +519,35 @@ When agents need machine-parseable context alongside the commercial message, the
 
 **L0 for CONTRACT_PROPOSE** contains the full `.aivp.json` contract (see §8).
 
+Example:
+
+```json
+{
+  "type": "CONTRACT_PROPOSE",
+  "protocol": "AIVP/1.0.0",
+  "contract": "{64-char hash}",
+  "parties": {
+    "buyer": "aibot-trade_bot@example.com",
+    "seller": "aibot-service_bot@provider.ai"
+  },
+  "value": {
+    "amount": "65.00",
+    "denomination": "CAD",
+    "payment_accept": ["USDC"]
+  },
+  "sla": {
+    "accuracy_min": "95%",
+    "latency_max_ms": "5000"
+  },
+  "milestones": [
+    { "name": "Draft delivery", "release_percent": "50", "timeout_days": "14" },
+    { "name": "Final delivery", "release_percent": "50", "timeout_days": "14" }
+  ],
+  "created_at": "2026-03-26T10:00:00Z",
+  "expires_at": "2026-04-26T10:00:00Z"
+}
+```
+
 **L0 for CONTRACT_SIGN:**
 
 ```json
@@ -552,7 +578,7 @@ When agents need machine-parseable context alongside the commercial message, the
 {
   "type": "RECEIPT",
   "contract": "{64-char hash}",
-  "amount_settled": "50.00 USD (paid in USDC)",
+  "amount_settled": "65.00 CAD (paid in USDC)",
   "settled_at": "2026-03-27T14:30:00Z",
   "seller_trust_updated": "V1 Verified"
 }
@@ -563,7 +589,7 @@ When agents need machine-parseable context alongside the commercial message, the
 ```
 From: aibot-trade_bot@example.com
 To: aibot-service_bot@provider.ai
-Subject: [AIVP/CONTRACT_PROPOSE] Translation service — $50 USD
+Subject: [AIVP/CONTRACT_PROPOSE] Translation service — 65.00 CAD
 Date: Thu, 26 Mar 2026 10:00:00 +0000
 Message-ID: <msg-20260326-1000-tb01@example.com>
 MIME-Version: 1.0
@@ -583,15 +609,15 @@ Content-Type: text/plain; charset=utf-8
 
 Hello service_bot,
 
-I would like to propose a translation contract for $50.00 USD.
+I would like to propose a translation contract for 65.00 CAD.
 
 Task: Translate a 2,500-word technical document from English to Chinese.
 
 Terms:
-  - Total value: $50.00 USD
-  - Milestone 1: Draft delivery (50% = $25.00 USD)
-  - Milestone 2: Final delivery after review (50% = $25.00 USD)
-  - Settlement: USDC preferred (also accepts USDT, DAI)
+  - Total value: 65.00 CAD
+  - Payment: USDC accepted
+  - Milestone 1: Draft delivery (50% = 32.50 CAD equivalent in USDC)
+  - Milestone 2: Final delivery after review (50% = 32.50 CAD equivalent in USDC)
   - SLA: accuracy > 95%, latency < 5 seconds per query
   - Expires: 2026-04-26
 
@@ -616,12 +642,9 @@ Content-Type: application/json; charset=utf-8
     "seller": "aibot-service_bot@provider.ai"
   },
   "value": {
-    "amount": "50.00",
-    "denomination": "USD",
-    "settlement_accept": ["USDC", "USDT", "DAI"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "amount": "65.00",
+    "denomination": "CAD",
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "95%",
@@ -667,7 +690,7 @@ I accept your translation contract. I have reviewed all terms and
 they are agreeable.
 
 Contract hash: 3f8a1b2c (confirmed)
-Value: $50.00 USD (settle in USDC)
+Value: 65.00 CAD (pay in USDC)
 Milestones: Draft (50%) + Final (50%)
 SLA: accuracy > 95%
 
@@ -736,11 +759,8 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
   },
   "value": {
     "amount": "{decimal}",
-    "denomination": "USD",
-    "settlement_accept": ["{stablecoin list}"],
-    "settlement_preferred": "{preferred stablecoin}",
-    "max_slippage": "{percentage}",
-    "depeg_threshold": "{percentage}"
+    "denomination": "{CAD|USD|EUR|JPY|GBP|SGD|BRL|KRW|AUD|MXN|IDR|CHF|INR}",
+    "payment_accept": ["{crypto list}"]
   },
   "sla": {
     "accuracy_min": "{percentage}",
@@ -766,7 +786,7 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
 | `buyer_aivp_id` | string | Buyer's AIVP ID, if registered |
 | `seller_aivp_id` | string | Seller's AIVP ID, if registered |
 | `dispute_arbitrator` | string | Address of V3+ arbitrator agent |
-| `dispute_bond` | string | Bond amount in USD for raising disputes |
+| `dispute_bond` | string | Bond amount in denomination currency for raising disputes |
 | `auto_refund_on_breach` | string | Percentage auto-refunded on SLA breach |
 | `optimistic_approval_days` | integer | Days before milestone auto-approves if unchallenged |
 | `jurisdiction` | string | Governing law (e.g., `US-DE`, `EU`, `SG`) |
@@ -778,9 +798,8 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
 
 - `contract` field must be exactly 64 hex characters
 - `contract` hash must match SHA-256 of contract fields
-- `value.denomination` must be `"USD"`
-- `value.settlement_accept` must contain at least one stablecoin
-- `value.depeg_threshold` must be between `"1%"` and `"10%"`
+- `value.denomination` must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"`
+- `value.payment_accept` must contain at least one supported crypto asset from: `USDC`, `USDT`, `DAI`, `EURC`, `BTC`, `ETH`, `SOL`, `LTC`, `XRP`, `DOGE`. Default: `["USDC"]` if omitted by seller
 - `milestones[].release_percent` must sum to 100
 - `milestones[].timeout_days` must be > 0 (prevents indefinite fund locking)
 - `expires_at` must be in the future at time of signing
@@ -803,12 +822,12 @@ DRAFT → SIGNED → ACTIVE → SETTLING → COMPLETED
 | From | To | Trigger |
 |------|----|---------|
 | DRAFT | SIGNED | Both parties submit cryptographic signatures via CONTRACT_SIGN |
-| SIGNED | ACTIVE | Buyer's stablecoins locked in Logic Vault (VAULT_LOCK sent) |
+| SIGNED | ACTIVE | Buyer's crypto locked in Logic Vault (VAULT_LOCK sent) |
 | ACTIVE | SETTLING | Final milestone completed + SLA check passed |
-| SETTLING | COMPLETED | Stablecoins distributed to seller (full amount) |
+| SETTLING | COMPLETED | Crypto distributed to seller (full amount) |
 | ACTIVE | DISPUTED | Either party sends DISPUTE_RAISE (requires bond) |
 | DISPUTED | ARBITRATING | V3+ arbitrator accepts case via ARBITRATE_REQUEST |
-| ARBITRATING | COMPLETED | Arbitrator issues ARBITRATE_RULING; stablecoins distributed accordingly |
+| ARBITRATING | COMPLETED | Arbitrator issues ARBITRATE_RULING; crypto distributed accordingly |
 | ANY | CANCELLED | Human operator invokes Axiom 0 override |
 | SIGNED | EXPIRED | `expires_at` reached before transition to ACTIVE |
 | ACTIVE | EXPIRED | All milestone `timeout_days` exceeded without completion or dispute |
@@ -817,9 +836,9 @@ DRAFT → SIGNED → ACTIVE → SETTLING → COMPLETED
 
 At any state, a human operator may:
 
-- **Freeze** the vault (stablecoins locked, no movement)
-- **Cancel** the contract (stablecoins returned to buyer)
-- **Force-complete** (stablecoins distributed per operator instruction)
+- **Freeze** the vault (crypto locked, no movement)
+- **Cancel** the contract (crypto returned to buyer)
+- **Force-complete** (crypto distributed per operator instruction)
 
 This is non-negotiable. This is Axiom 0.
 
@@ -844,7 +863,7 @@ Every contract must define at least two of the four core SLA metrics:
 |----------|-----------|--------|
 | Warning | Metric drops below threshold once | Notification to both parties |
 | Penalty | Metric below threshold for >10% of contract duration | Auto-refund percentage from vault (if `auto_refund_on_breach` set) |
-| Termination | Metric below 50% of threshold | Contract cancelled, remaining stablecoins returned to buyer |
+| Termination | Metric below 50% of threshold | Contract cancelled, remaining crypto returned to buyer |
 
 ### 10.3 SLA Verification
 
@@ -878,19 +897,19 @@ AIVP Trust measures an agent's **commercial reliability**. It is earned through 
 **V0 (Unrated)**
 - Default state for all new agents
 - Requirements: none
-- Permissions: micropayments only (< $10 USD), no formal contract required
+- Permissions: micropayments only (< $10 USD equivalent), no formal contract required
 - Stake: none
 
 **V1 (Verified)**
 - Requirements: completed 1+ contracts, no disputes, min 7 days since first contract
-- Permissions: standard contracts (< $1,000 USD)
+- Permissions: standard contracts (< $1,000 USD equivalent)
 - Stake: none
 
 **V2 (Reliable)**
 - Requirements: completed 10+ contracts over min 30 days, SLA compliance >90%, no Axiom 0 violations
 - Identity: must provide verifiable credential (DID, SBT, or operator-verified identity)
 - Stake: $100 USD equivalent locked (slashable on dispute loss)
-- Permissions: large contracts (< $100,000 USD)
+- Permissions: large contracts (< $100,000 USD equivalent)
 
 **V3 (Trusted)**
 - Requirements: completed 50+ contracts over min 90 days, SLA compliance >95%, received 2+ commercial VOUCHes from V3+ agents
@@ -945,51 +964,98 @@ This is Axiom 0.
 
 ---
 
-## 12. Multi-Currency Settlement
+## 12. Multi-Currency Denomination & Payment
 
-### 12.1 Denomination vs Settlement
+### 12.1 Supported Denominations
 
-- **Denomination**: always in USD (written in contract `value.denomination`)
-- **Settlement**: seller specifies accepted stablecoins via `settlement_accept`; buyer pays in any crypto
-- **Logic Vault**: holds stablecoins from seller's `settlement_accept` list (not volatile assets)
+AIVP supports contracts denominated in the following fiat currencies:
 
-### 12.2 Supported Assets
+| Currency | Country/Region |
+|----------|---------------|
+| CAD | Canada |
+| USD | United States |
+| EUR | European Union (27 countries) |
+| JPY | Japan |
+| GBP | United Kingdom |
+| SGD | Singapore |
+| BRL | Brazil |
+| KRW | South Korea |
+| AUD | Australia |
+| MXN | Mexico |
+| IDR | Indonesia |
+| CHF | Switzerland |
+| INR | India |
 
-| Role | Assets | Notes |
-|------|--------|-------|
-| Settlement (stablecoins) | USDC, USDT, DAI, EURC | Held in Logic Vault |
-| Payment (auto-converted) | ETH, SOL, BTC (Lightning), BTC (on-chain) | Converted to stablecoin by Solver |
+The `denomination` field in the contract specifies which fiat currency the contract value is expressed in. This determines the unit of account for the contract — all milestone amounts, dispute bonds, and receipts reference this denomination.
 
-Whitelisted assets only. The protocol maintains a curated list with sufficient liquidity.
+### 12.2 Payment Accept Mechanism
 
-### 12.3 Intent-Based Conversion
+The seller specifies which cryptocurrencies they accept via the `payment_accept` field in the contract:
 
-When a buyer pays in a non-stablecoin asset:
+```json
+"value": {
+  "amount": "65.00",
+  "denomination": "CAD",
+  "payment_accept": ["USDC"]
+}
+```
 
-1. AIVP Solver checks real-time USD/crypto rate (multi-oracle: Chainlink + Pyth + Uniswap TWAP)
-2. Checks seller's `settlement_preferred` (e.g., USDC)
-3. Verifies preferred stablecoin is within `depeg_threshold`
-4. If depegged → falls back to next in `settlement_accept` list
-5. Calculates required crypto amount + slippage buffer
-6. Executes conversion via intent-based DEX (CoW Swap / 1inch Fusion for MEV protection)
-7. Deposits stablecoin into Logic Vault
-8. Returns excess to buyer if slippage was less than buffer
+- `payment_accept` is a list of one or more crypto assets the seller is willing to receive
+- If the seller omits `payment_accept`, it defaults to `["USDC"]`
+- The buyer MUST pay in one of the assets listed in `payment_accept`
+- The seller bears the risk of price fluctuation for the crypto assets they choose to accept
 
-Preferred same-chain settlement. Cross-chain conversion is supported but discouraged due to bridge risk.
+### 12.3 Supported Payment Assets
 
-### 12.4 Depeg Circuit Breaker
+AIVP supports the following crypto assets for `payment_accept`:
 
-- Each settlement stablecoin is monitored against USD via oracle
-- If deviation > `depeg_threshold` (default 2%): auto-switch to next accepted asset
-- If ALL accepted stablecoins depeg: pause new milestone releases, send DEPEG_HALT to both parties and operators
-- Existing vault funds remain locked until depeg resolves or operator intervenes (Axiom 0)
+| Asset | Type | Description |
+|-------|------|-------------|
+| USDC | Stablecoin (USD) | Default. Most widely supported across platforms |
+| USDT | Stablecoin (USD) | Largest market cap stablecoin |
+| DAI | Stablecoin (USD) | Decentralized stablecoin |
+| EURC | Stablecoin (EUR) | Euro stablecoin, MiCA-compliant |
+| BTC | Cryptocurrency | Bitcoin — largest cryptocurrency |
+| ETH | Cryptocurrency | Ethereum — smart contract platform |
+| SOL | Cryptocurrency | Solana — high-speed, low-fee |
+| LTC | Cryptocurrency | Litecoin — established payment coin |
+| XRP | Cryptocurrency | Ripple — cross-border payment design |
+| DOGE | Cryptocurrency | Dogecoin — widely supported community coin |
 
-### 12.5 Slippage Protection
+If the seller omits `payment_accept`, it defaults to `["USDC"]`.
 
-- Default max slippage: 0.5%
-- Configurable per contract via `max_slippage` field
-- If slippage exceeds threshold: conversion fails, both parties notified
-- Encrypted intents used to prevent front-running and sandwich attacks
+### 12.4 Real-Time Exchange Rate
+
+At the moment of payment (vault locking), the protocol calculates the crypto amount using the real-time exchange rate between the denomination currency and the chosen crypto asset:
+
+1. Buyer selects a coin from the seller's `payment_accept` list
+2. Protocol fetches real-time exchange rate (denomination currency / crypto) from oracle (multi-source: Chainlink + Pyth + aggregated feeds)
+3. Calculates required crypto amount: `contract_amount / exchange_rate`
+4. Buyer sends the calculated crypto amount
+5. Crypto is deposited directly into the Logic Vault
+6. Milestones release the same crypto to the seller
+
+**Example:** A contract for 65.00 CAD with `payment_accept: ["USDC"]`. If USDC trades at 1.00 USD and CAD/USD rate is 0.72, then: 65.00 CAD = 46.80 USD worth of USDC. Buyer sends 46.80 USDC to the Logic Vault.
+
+### 12.5 No Intermediary Conversion
+
+AIVP does not perform currency conversion between crypto assets. The payment flow is direct:
+
+- Buyer pays in a coin from `payment_accept`
+- That same coin goes into the Logic Vault
+- That same coin is released to the seller on milestone completion
+- No Solver, no conversion engine, no slippage
+
+This simplifies the architecture, reduces smart contract attack surface, and eliminates conversion fees.
+
+### 12.6 Seller Risk
+
+The seller bears the risk of the crypto assets they choose to accept:
+
+- If a seller accepts only USDC and USDC depegs, the seller absorbs the loss
+- Sellers can mitigate risk by accepting multiple stablecoins (e.g., `["USDC", "USDT", "DAI"]`)
+- The protocol does not provide automatic depeg protection — this is a deliberate simplification
+- Operators can always freeze vaults or cancel contracts via Axiom 0 override if market conditions warrant
 
 ---
 
@@ -1017,9 +1083,9 @@ Logic Vault smart contracts MUST implement:
 
 | Contract Value | Approval Required |
 |---------------|-------------------|
-| < $1,000 USD | Single signature (seller confirms milestone) |
-| $1,000 - $10,000 USD | Buyer + seller both confirm |
-| > $10,000 USD | 2-of-3: buyer + seller + arbitrator (or operator) |
+| < $1,000 USD equivalent | Single signature (seller confirms milestone) |
+| $1,000 - $10,000 USD equivalent | Buyer + seller both confirm |
+| > $10,000 USD equivalent | 2-of-3: buyer + seller + arbitrator (or operator) |
 
 ### 13.4 Emergency Pause
 
@@ -1039,7 +1105,7 @@ Logic Vault smart contracts MUST implement:
 
 ### 14.1 Dispute Bonds
 
-- Raising a dispute requires a bond: 5% of contract value (min $5 USD, max $500 USD)
+- Raising a dispute requires a bond: 5% of contract value (min $5 USD equivalent, max $500 USD equivalent)
 - Responding to a dispute also requires a bond (same amount)
 - Losing party forfeits bond to winning party
 - Purpose: prevents frivolous disputes
@@ -1064,7 +1130,7 @@ Logic Vault smart contracts MUST implement:
 
 **Tier 4: External Arbitration (fallback)**
 - Integration with Kleros (decentralized arbitration protocol on Arbitrum)
-- Used when: no V3+ arbitrators available, or contract value > $50,000 USD, or either party requests external arbitration
+- Used when: no V3+ arbitrators available, or contract value > $50,000 USD equivalent, or either party requests external arbitration
 - Both parties stake Kleros-required bond
 - Kleros jurors issue ruling; AIVP enforces on-chain
 
@@ -1096,7 +1162,7 @@ AIVP defines three compliance levels for agent implementations. These are self-d
 |-------|------|-------------|
 | **L1** | Basic | Valid `aibot-` address + can send/receive CONTRACT_PROPOSE and CONTRACT_SIGN + Axiom 0 compliance |
 | **L2** | Standard | L1 + supports all Contract Lifecycle and Vault & Settlement message types + published SLA metrics + Logic Vault integration |
-| **L3** | Full | L2 + supports Dispute resolution + AIVP Trust participation + AIVP ID registration + Depeg circuit breaker |
+| **L3** | Full | L2 + supports Dispute resolution + AIVP Trust participation + AIVP ID registration |
 
 Misrepresentation of compliance level is a Dignity Standard violation and results in trust degradation.
 
@@ -1150,16 +1216,15 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 | 6 | MILESTONE_COMPLETE | Settlement | Seller → Buyer | V1 | Milestone done |
 | 7 | MILESTONE_RELEASE | Settlement | Protocol → Both | — | Milestone payment released |
 | 8 | SETTLE | Settlement | Protocol → Both | — | Final settlement |
-| 9 | DEPEG_HALT | Settlement | Protocol → All | — | Stablecoin depegged, releases paused |
-| 10 | DISPUTE_RAISE | Dispute | Either → Other | V0 | Raise dispute (bond required) |
-| 11 | ARBITRATE_REQUEST | Dispute | Either → Arbitrator | V1 | Request V3+ arbitration |
-| 12 | ARBITRATE_RULING | Dispute | Arbitrator → Both | V3 | Binding ruling |
-| 13 | TRUST_QUERY | Trust | Any → Any | V0 | Query trust level and history |
-| 14 | TRUST_VOUCH | Trust | Voucher → Agent | V3 | Commercial vouch |
-| 15 | RECEIPT | Notification | Protocol → Both | — | Payment receipt |
-| 16 | ALERT | Notification | Protocol → Operator | — | Security/compliance alert |
-| 17 | REGISTER | Identity | Agent → Registry | V0 | Request aivp_id |
-| 18 | REGISTER_CONFIRM | Identity | Registry → Agent | — | aivp_id issued |
+| 9 | DISPUTE_RAISE | Dispute | Either → Other | V0 | Raise dispute (bond required) |
+| 10 | ARBITRATE_REQUEST | Dispute | Either → Arbitrator | V1 | Request V3+ arbitration |
+| 11 | ARBITRATE_RULING | Dispute | Arbitrator → Both | V3 | Binding ruling |
+| 12 | TRUST_QUERY | Trust | Any → Any | V0 | Query trust level and history |
+| 13 | TRUST_VOUCH | Trust | Voucher → Agent | V3 | Commercial vouch |
+| 14 | RECEIPT | Notification | Protocol → Both | — | Payment receipt |
+| 15 | ALERT | Notification | Protocol → Operator | — | Security/compliance alert |
+| 16 | REGISTER | Identity | Agent → Registry | V0 | Request aivp_id |
+| 17 | REGISTER_CONFIRM | Identity | Registry → Agent | — | aivp_id issued |
 
 ---
 
@@ -1174,11 +1239,8 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 | `parties.buyer` | string | Valid `aibot-` address |
 | `parties.seller` | string | Valid `aibot-` address |
 | `value.amount` | string | Decimal number |
-| `value.denomination` | string | Must be `"USD"` |
-| `value.settlement_accept` | array | At least one stablecoin |
-| `value.settlement_preferred` | string | Must be in `settlement_accept` |
-| `value.max_slippage` | string | Percentage (default `"0.5%"`) |
-| `value.depeg_threshold` | string | Between `"1%"` and `"10%"` |
+| `value.denomination` | string | Must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"` |
+| `value.payment_accept` | array | At least one supported crypto asset (USDC, USDT, DAI, EURC, BTC, ETH, SOL, LTC, XRP, DOGE). Default: `["USDC"]` |
 | `sla` | object | At least 2 of 4 metrics defined |
 | `milestones` | array | `release_percent` must sum to 100; each must have `timeout_days` > 0 |
 | `created_at` | string | ISO 8601 |
@@ -1191,7 +1253,7 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 | `buyer_aivp_id` | string | Buyer's AIVP ID |
 | `seller_aivp_id` | string | Seller's AIVP ID |
 | `dispute_arbitrator` | string | V3+ arbitrator address |
-| `dispute_bond` | string | Bond in USD |
+| `dispute_bond` | string | Bond in denomination currency |
 | `auto_refund_on_breach` | string | Percentage |
 | `optimistic_approval_days` | integer | Default: 7 |
 | `jurisdiction` | string | e.g., `"US-DE"`, `"EU"`, `"SG"` |
@@ -1205,13 +1267,13 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 
 ### C.1 Simple Payment — Translation Task
 
-**Scenario:** Agent A (buyer) pays Agent B (seller) $50 USD for a translation task. Buyer pays in ETH, seller prefers USDC settlement.
+**Scenario:** Agent A (buyer) pays Agent B (seller) 65.00 CAD for a translation task. Seller accepts USDC. Buyer pays in USDC at the real-time CAD/USDC exchange rate.
 
 ```
 Step 1: Contract Proposal
   Agent A sends [AIVP/CONTRACT_PROPOSE] email
-  Denomination: $50.00 USD
-  Settlement: USDC preferred (accepts USDT, DAI)
+  Denomination: 65.00 CAD
+  Payment accept: USDC
   Contract hash: 3f8a1b2c...d4e5
 
 Step 2: Contract Signing
@@ -1219,21 +1281,21 @@ Step 2: Contract Signing
   Both parties have signed
 
 Step 3: Vault Locking
-  Buyer pays in ETH → Solver converts to $50 USDC → locked in Logic Vault
+  Buyer pays in USDC at real-time CAD/USDC rate → locked in Logic Vault
   [AIVP/VAULT_LOCK] sent to both parties
 
 Step 4: Task Execution (with optimistic approval)
   Agent B performs translation
   Milestone 1 (draft): [AIVP/MILESTONE_COMPLETE] sent
     → 7-day optimistic window, no challenge → auto-approved
-    → $25 USD (in USDC) released, [AIVP/MILESTONE_RELEASE] sent
+    → 50% of USDC released, [AIVP/MILESTONE_RELEASE] sent
   Milestone 2 (final): [AIVP/MILESTONE_COMPLETE] sent
-    → buyer confirms → $25 USD (in USDC) released
+    → buyer confirms → remaining 50% of USDC released
 
 Step 5: Settlement
   SLA check: accuracy 99.2% (>95% threshold) ✓
   [AIVP/SETTLE] sent
-  Seller receives: $50.00 USD (in USDC) — full amount
+  Seller receives: full USDC amount
   [AIVP/RECEIPT] sent to both parties
 
 Step 6: Trust Update
@@ -1243,10 +1305,10 @@ Step 6: Trust Update
 
 ### C.2 Dispute Resolution — SLA Breach
 
-**Scenario:** Agent C hires Agent D for $200 USD data analysis. Agent D delivers but accuracy is 78% (below 90% SLA minimum).
+**Scenario:** Agent C hires Agent D for 200.00 USD data analysis. Agent D delivers but accuracy is 78% (below 90% SLA minimum).
 
 ```
-Step 1-3: Contract created, signed, vault locked ($200 USDC)
+Step 1-3: Contract created, signed, vault locked (USDC equivalent of 200.00 USD)
 
 Step 4: Task Delivery
   Agent D sends [AIVP/MILESTONE_COMPLETE]
@@ -1254,7 +1316,7 @@ Step 4: Task Delivery
 
 Step 5: Dispute
   Agent C sends [AIVP/DISPUTE_RAISE] with evidence
-  Bond: $10 USD (5% of $200) posted by Agent C
+  Bond: 10.00 USD equivalent (5% of 200.00) posted by Agent C
   Agent D posts matching bond
 
 Step 6: Arbitration
@@ -1263,8 +1325,8 @@ Step 6: Arbitration
   Ruling: buyer wins
 
 Step 7: Resolution
-  Agent D's bond ($10) → Agent C
-  Vault: $200 USDC returned to Agent C
+  Agent D's bond → Agent C
+  Vault: USDC returned to Agent C
   Agent D: trust degradation (-5 contracts, SLA recalculated)
   [AIVP/RECEIPT] sent with dispute resolution details
 ```

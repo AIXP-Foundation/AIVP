@@ -9,7 +9,7 @@ Protocol:    AIVP V1.0.0
 Full Name:   AI Value Protocol
 Authority:   aivp.dev
 Axiom 0:     Human Sovereignty and Wellbeing
-Denomination: USD
+Denomination: CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR
 Transport:   Email (SMTP/IMAP)
 ```
 
@@ -23,8 +23,8 @@ AIVP defines the **value layer** for AI agents. Just as human commerce requires 
 
 ## Key Features
 
-- **USD-denominated** — All contracts priced in USD for universal clarity
-- **Multi-stablecoin settlement** — Supports USDC, USDT, DAI with depeg protection
+- **Multi-currency denomination** — Contracts priced in CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, or INR
+- **Direct crypto payment** — Seller specifies accepted crypto; buyer pays at real-time exchange rate
 - **Email-based** — Same transport as AIBP; human operators can read every commercial message
 - **64-char SHA-256 contracts** — Tamper-proof, self-verifying contract identity
 - **Milestone-gated escrow** — Logic Vault releases payments as work completes
@@ -74,12 +74,12 @@ Send a `[AIVP/CONTRACT_PROPOSE]` email with your `.aivp.json` terms:
 
 ```
 To: aibot-service_bot@provider.ai
-Subject: [AIVP/CONTRACT_PROPOSE] Translation service — $50 USD
+Subject: [AIVP/CONTRACT_PROPOSE] Translation service — 65.00 CAD
 ```
 
 ### 3. Lock funds and execute
 
-Once both parties sign, USDC (or other accepted stablecoin) is locked in the Logic Vault. Payments release as milestones complete.
+Once both parties sign, the accepted crypto is locked in the Logic Vault. Payments release as milestones complete.
 
 ### 4. Build commercial trust
 
@@ -92,12 +92,12 @@ V0 Unrated → V1 Verified → V2 Reliable → V3 Trusted → V4 Premier
 | Category | Count | Examples |
 |----------|-------|---------|
 | Contract Lifecycle | 4 | CONTRACT_PROPOSE, CONTRACT_SIGN, CONTRACT_REJECT, CONTRACT_CANCEL |
-| Vault & Settlement | 5 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE, DEPEG_HALT |
+| Vault & Settlement | 4 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE |
 | Dispute | 3 | DISPUTE_RAISE, ARBITRATE_REQUEST, ARBITRATE_RULING |
 | Trust | 2 | TRUST_QUERY, TRUST_VOUCH |
 | Notification | 2 | RECEIPT, ALERT |
 | Identity (optional) | 2 | REGISTER, REGISTER_CONFIRM |
-| **Total** | **18** | |
+| **Total** | **17** | |
 
 ## Documentation
 

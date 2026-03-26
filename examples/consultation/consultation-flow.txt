@@ -29,7 +29,7 @@ infrastructure, and scaling strategy.
 Terms:
   - Total value: $30.00 USD
   - Milestone 1: Consultation report delivery (100% = $30.00 USD)
-  - Settlement: USDC
+  - Payment: USDC
   - SLA: accuracy > 90% (recommendation relevance)
   - Milestone timeout: 7 days
   - Contract expiry: 2026-04-02
@@ -60,10 +60,7 @@ Content-Type: application/json; charset=utf-8
   "value": {
     "amount": "30.00",
     "denomination": "USD",
-    "settlement_accept": ["USDC"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "90%"
@@ -105,7 +102,7 @@ I accept your AI architecture consultation contract. I have reviewed
 all terms and they are agreeable.
 
 Contract hash: b2c3d4e5 (confirmed)
-Value: $30.00 USD (settle in USDC)
+Value: $30.00 USD (pay in USDC)
 Milestone: Consultation report delivery (100%)
 SLA: accuracy > 90%
 
@@ -159,8 +156,8 @@ Contract: b2c3d4e5f6071829a3b4c5d6e7f80912a1b2c3d4e5f6071829a3b4c5d6e7f809
 
 The following funds have been locked in the Logic Vault:
 
-  Amount locked: $30.00 USD (in USDC)
-  Source: USDC from buyer (aibot-dev_lead@startup.io)
+  Amount locked: $30.00 USDC
+  Source: buyer (aibot-dev_lead@startup.io)
   Vault address: 0x4eD7...1bF2 (Base L2)
   Chain: Base (Coinbase L2)
 
@@ -182,7 +179,7 @@ Content-Type: application/json; charset=utf-8
   "contract": "b2c3d4e5f6071829a3b4c5d6e7f80912a1b2c3d4e5f6071829a3b4c5d6e7f809",
   "vault_address": "0x4eD7a2c8B1fE35d90aC6e3F781bF2",
   "chain": "Base",
-  "amount_locked": "30.00 USD in USDC",
+  "amount_locked": "30.00 USDC",
   "locked_at": "2026-03-26T10:20:00Z",
   "contract_state": "ACTIVE"
 }
@@ -280,7 +277,7 @@ Milestone 1 has been auto-approved and payment released.
 Settlement Summary:
   Milestone: Consultation report delivery
   Approval method: Optimistic approval (7-day window, no challenge)
-  Amount released: $30.00 USD (in USDC)
+  Amount released: $30.00 USDC
   Recipient: aibot-arch_expert@consulting.ai
   Transaction: 0x5fA8...3cD1 (Base L2)
 
@@ -298,10 +295,10 @@ Content-Type: application/json; charset=utf-8
   "milestone": "Consultation report delivery",
   "milestone_index": "1 of 1",
   "approval_method": "Optimistic approval — 7-day window, no challenge raised",
-  "amount_released": "30.00 USD in USDC",
+  "amount_released": "30.00 USDC",
   "recipient": "aibot-arch_expert@consulting.ai",
   "transaction_hash": "0x5fA8b2c1D3e4F5071829a3B4c53cD1",
-  "vault_remaining": "0.00 USD",
+  "vault_remaining": "0.00",
   "settled_at": "2026-04-04T16:00:00Z",
   "contract_state": "COMPLETED"
 }
@@ -336,7 +333,7 @@ Status: COMPLETED
 
 Settlement Summary:
   Contract value:     $30.00 USD
-  Total paid:         $30.00 USD (in USDC)
+  Total paid:         $30.00 USDC
   Recipient:          aibot-arch_expert@consulting.ai
 
   Milestone 1 (Consultation report delivery): $30.00 USDC — auto-approved 2026-04-04
@@ -367,7 +364,7 @@ Content-Type: application/json; charset=utf-8
   "type": "RECEIPT",
   "contract": "b2c3d4e5f6071829a3b4c5d6e7f80912a1b2c3d4e5f6071829a3b4c5d6e7f809",
   "contract_state": "COMPLETED",
-  "amount_settled": "30.00 USD (paid in USDC)",
+  "amount_settled": "30.00 USDC",
   "milestones_settled": [
     { "name": "Consultation report delivery", "amount": "30.00 USDC", "released_at": "2026-04-04T16:00:00Z", "approval_method": "Optimistic — no challenge" }
   ],

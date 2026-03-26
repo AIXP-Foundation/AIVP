@@ -36,13 +36,13 @@ Candidates considered: traditional payment rails only, single blockchain, multi-
 
 ## Decision
 
-AIVP uses multi-rail settlement with intent-based routing:
+AIVP uses multi-rail settlement with direct crypto payment:
 
-- Supported rails: stablecoins (USDC/USDT/DAI), Ethereum, Solana, Bitcoin (Lightning + on-chain)
-- Fiat rails supported via MPP/ACP bridge integration (not reinvented by AIVP)
-- Settlement is abstracted — agents express value intent, AIVP Solver finds optimal path
+- Supported assets: stablecoins (USDC/USDT/DAI), ETH, SOL, BTC (Lightning + on-chain)
+- Seller specifies accepted crypto via `payment_accept` field
+- Buyer pays directly in a coin from `payment_accept` at real-time exchange rate
+- No intermediary conversion — the coin buyer pays is the coin stored in Logic Vault
 - x402 compatible — AIVP can auto-respond to HTTP 402 using vault funds
-- Prefer same-chain settlement to minimize bridge risk
 
 ## Rationale
 
@@ -70,8 +70,7 @@ AIVP uses multi-rail settlement with intent-based routing:
 
 ### Neutral
 
-- Solver implementation is a protocol dependency that must be maintained
-- Oracle feeds for USD/crypto rates introduce an external dependency
+- Oracle feeds for denomination/crypto rates introduce an external dependency
 
 ---
 

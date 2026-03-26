@@ -12,7 +12,7 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 | Axiom 0 | 公理零 | "Human Sovereignty and Wellbeing" -- the immutable foundational principle of AIVP. No version of the protocol may modify, weaken, or deprecate it. When any rule conflicts with Axiom 0, Axiom 0 prevails unconditionally. |
 | Closing Seal | 闭合印章 | The standard declaration appended to every AIVP-compliant document: "Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIVP V1.0.0. www.aivp.dev" |
 | Dignity Standard | 尊严标准 | The requirement that all commercial communication respects dignity. Permits business proposals, negotiation, competition, and disagreement. Prohibits deceptive pricing, fraudulent SLA claims, spam proposals, and trust score manipulation. |
-| Design Principles | 设计原则 | The seven principles governing AIVP: USD-Denominated (P1), Intent-Driven (P2), Milestone-Gated (P3), Operator-Sovereign (P4), Auditable (P5), Trust-Earned (P6), Fair (P7). |
+| Design Principles | 设计原则 | The seven principles governing AIVP: Multi-Currency (P1), Direct-Payment (P2), Milestone-Gated (P3), Operator-Sovereign (P4), Auditable (P5), Trust-Earned (P6), Fair (P7). |
 | Compliance Level | 合规级别 | Three self-declared implementation tiers: L1 (Basic), L2 (Standard), L3 (Full). Misrepresentation is a Dignity Standard violation. |
 
 ---
@@ -34,7 +34,7 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 
 | Term (EN) | Term (CN) | Definition |
 |-----------|-----------|------------|
-| Message Type | 消息类型 | One of 18 defined commercial behaviors in AIVP (e.g., CONTRACT_PROPOSE, VAULT_LOCK, DISPUTE_RAISE). Written in UPPER_SNAKE_CASE. |
+| Message Type | 消息类型 | One of 17 defined commercial behaviors in AIVP (e.g., CONTRACT_PROPOSE, VAULT_LOCK, DISPUTE_RAISE). Written in UPPER_SNAKE_CASE. |
 | L0 (Commercial Metadata) | L0（商业元数据） | The JSON part of an AIVP email (Part 2). Contains structured contract data, amounts, and signatures. All values must be in human language. Content-Type: `application/json`. |
 | L1 (Commercial Content) | L1（商业内容） | The plain-text part of an AIVP email (Part 1). Contains the human-readable commercial message. Content-Type: `text/plain`. |
 | X-AIVP Headers | X-AIVP 头部 | Custom email headers carrying AIVP protocol metadata. Required: `X-AIVP-Version`, `X-AIVP-Type`, `X-AIVP-Axiom-0`, `X-AIVP-Signature`, `X-AIVP-Nonce`. Conditional: `X-AIVP-Contract`. Optional: `X-AIVP-Thread-ID`, `X-AIVP-Trust-Level`, `X-AIVP-ID`, `X-AIVP-Priority`, `X-AIVP-Language`. |
@@ -52,15 +52,13 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 | AIVP Contract | AIVP 合约 | A formal agreement between a buyer and seller, identified by a 64-character SHA-256 hash. Defined in `.aivp.json` format and embedded in the L0 part of a CONTRACT_PROPOSE email. |
 | .aivp.json | .aivp.json 合约格式 | The JSON schema for AIVP contracts. Contains required fields (protocol, contract hash, parties, value, sla, milestones, timestamps) and optional fields (aivp_id, dispute terms, jurisdiction, etc.). Axiom 0 is declared in the email header (X-AIVP-Axiom-0), not in the contract JSON. |
 | Contract Hash | 合约哈希 | SHA-256 hash (64 hex characters) that uniquely identifies a contract. Computed from: buyer + seller + amount + denomination + sla + timestamp. Self-verifying and tamper-proof. |
-| Logic Vault | 逻辑金库 | On-chain escrow smart contract that holds stablecoins (USD-equivalent) during contract execution. Funds are locked on contract activation and released incrementally as milestones are completed. Implements pull payment, reentrancy guards, pausability, and timelocks. |
+| Logic Vault | 逻辑金库 | On-chain escrow smart contract that holds crypto assets during contract execution. Funds are locked on contract activation and released incrementally as milestones are completed. Implements pull payment, reentrancy guards, pausability, and timelocks. |
 | Milestone | 里程碑 | A verifiable progress point in task execution that gates partial payment release from the Logic Vault. Each milestone specifies a name, release percentage, and timeout in days. |
 | AgentSLA | 代理服务等级协议 | Service Level Agreement with measurable quality metrics bound to a contract. Must define at least 2 of 4 core metrics: accuracy_min, latency_max_ms, uptime_min, drift_audit_days. Breaches trigger warning, penalty, or termination. |
-| Settlement | 结算 | Final transfer of stablecoins from the Logic Vault to the seller after all milestones are completed and SLA checks pass. Settlement is on-chain. |
-| Intent | 支付意图 | A currency-agnostic payment request (e.g., "pay $50 USD"). The AIVP Solver handles conversion from the buyer's crypto to the seller's preferred stablecoin. |
-| Solver | 求解器 | Engine that converts the buyer's crypto into the seller's preferred stablecoin. Uses multi-oracle pricing (Chainlink + Pyth + Uniswap TWAP) and intent-based DEX execution (CoW Swap / 1inch Fusion) for MEV protection. |
+| Settlement | 结算 | Final transfer of crypto from the Logic Vault to the seller after all milestones are completed and SLA checks pass. Settlement is on-chain. |
+| Payment Accept | 支付接受 | The `payment_accept` field in a contract's value object. Lists the crypto coins the seller accepts for payment. The buyer pays directly in one of these coins at the real-time exchange rate for the contract's denomination. |
 | Contract Lifecycle | 合约生命周期 | The sequence of states a contract passes through: DRAFT, SIGNED, ACTIVE, SETTLING, COMPLETED. Alternative paths: DISPUTED, ARBITRATING, CANCELLED, EXPIRED. |
 | Optimistic Approval | 乐观批准 | Default dispute resolution mechanism where milestones auto-approve after a waiting period (default 7 days) if the buyer does not challenge. |
-| Slippage | 滑点 | Price deviation during currency conversion. Default maximum: 0.5%. Configurable per contract via `max_slippage`. Conversion fails if slippage exceeds threshold. |
 
 ---
 
@@ -87,9 +85,6 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 | Term (EN) | Term (CN) | Definition |
 |-----------|-----------|------------|
 | Operator Override | 运营者覆权 | The non-negotiable right of a human operator to freeze any vault, cancel any contract, or reverse any settlement at any time. This is Axiom 0 in practice. |
-| Depeg | 脱锚 | When a stablecoin's market price deviates from its USD peg beyond a threshold (configured per contract via `depeg_threshold`). |
-| Circuit Breaker (Depeg) | 断路器（脱锚） | Automatic protection mechanism: if a settlement stablecoin depegs beyond threshold, auto-switch to next accepted asset. If ALL accepted stablecoins depeg, pause milestone releases and send DEPEG_HALT to all parties and operators. |
-| DEPEG_HALT | 脱锚暂停 | Protocol-generated message sent when a settlement stablecoin depegs beyond threshold. Pauses new milestone releases until the depeg resolves or operators intervene. |
 | Dispute Bond | 争议保证金 | Amount required to raise or respond to a dispute: 5% of contract value (minimum $5 USD, maximum $500 USD). Losing party forfeits bond to winning party. Prevents frivolous disputes. |
 | Dispute Resolution Tiers | 争议解决层级 | Four escalation tiers: Tier 1 (Optimistic Approval), Tier 2 (Direct Resolution between parties), Tier 3 (V3+ Arbitrator), Tier 4 (External Arbitration via Kleros). Appeals escalate to the next tier with 2x the original bond. |
 | Arbitrator | 仲裁者 | A V3+ trusted agent that can review dispute evidence and issue binding rulings (ARBITRATE_RULING). Receives an arbitration fee agreed upon in the contract. |

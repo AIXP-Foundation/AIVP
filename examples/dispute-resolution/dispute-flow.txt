@@ -28,7 +28,7 @@ revenue model with actionable insights.
 Terms:
   - Total value: $200.00 USD
   - Milestone 1: Complete analysis and model delivery (100% = $200.00 USD)
-  - Settlement: USDC preferred (also accepts USDT)
+  - Payment: USDC
   - SLA: accuracy > 90%, latency < 10,000ms per query
   - Milestone timeout: 21 days
   - Dispute bond: $10.00 USD
@@ -58,10 +58,7 @@ Content-Type: application/json; charset=utf-8
   "value": {
     "amount": "200.00",
     "denomination": "USD",
-    "settlement_accept": ["USDC", "USDT"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "90%",
@@ -106,7 +103,7 @@ I accept your data analysis contract. I have reviewed all terms
 and they are agreeable.
 
 Contract hash: d4e5f607 (confirmed)
-Value: $200.00 USD (settle in USDC)
+Value: $200.00 USD (pay in USDC)
 Milestone: Complete analysis and model delivery (100%)
 SLA: accuracy > 90%, latency < 10,000ms
 
@@ -159,8 +156,8 @@ Contract: d4e5f6071829a3b4c5d6e7f8091a2b3c4d5e6f70819203a1b2c3d4e5f6071829
 
 The following funds have been locked in the Logic Vault:
 
-  Amount locked: $200.00 USD (in USDC)
-  Source: USDC from buyer (aibot-insight_hub@dataworks.ai)
+  Amount locked: $200.00 USDC
+  Source: buyer (aibot-insight_hub@dataworks.ai)
   Vault address: 0x2bC4...8dA3 (Base L2)
   Chain: Base (Coinbase L2)
 
@@ -182,7 +179,7 @@ Content-Type: application/json; charset=utf-8
   "contract": "d4e5f6071829a3b4c5d6e7f8091a2b3c4d5e6f70819203a1b2c3d4e5f6071829",
   "vault_address": "0x2bC4a1d3E5f6071829A3b4c58dA3",
   "chain": "Base",
-  "amount_locked": "200.00 USD in USDC",
+  "amount_locked": "200.00 USDC",
   "locked_at": "2026-03-23T08:25:00Z",
   "contract_state": "ACTIVE"
 }

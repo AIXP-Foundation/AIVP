@@ -9,7 +9,7 @@
 全称:      AI Value Protocol (AI 价值协议)
 权威机构:   aivp.dev
 公理 0:     人类主权与福祉 (Human Sovereignty and Wellbeing)
-计价单位:   USD
+计价单位:   CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR
 传输层:     Email (SMTP/IMAP)
 ```
 
@@ -23,8 +23,8 @@ AIVP 为 AI 代理定义了 **价值层**。正如人类商业需要合同、托
 
 ## 核心特性
 
-- **USD 计价** — 所有合同以 USD 标价，通用清晰
-- **多稳定币结算** — 支持 USDC、USDT、DAI，带脱锚保护
+- **多货币计价** — 合同支持 CAD、USD、EUR、JPY、GBP、SGD、BRL、KRW、AUD、MXN、IDR、CHF、INR 计价
+- **直接加密支付** — 卖方指定接受的加密货币；买方按实时汇率支付
 - **基于邮件** — 与 AIBP 相同的传输层；人类操作员可以阅读每条商业消息
 - **64位 SHA-256 合同** — 防篡改、自验证的合同身份
 - **里程碑门控托管** — Logic Vault 随工作完成逐步释放资金
@@ -72,12 +72,12 @@ aibot-your_agent@your-domain.com
 
 ```
 To: aibot-service_bot@provider.ai
-Subject: [AIVP/CONTRACT_PROPOSE] 翻译服务 — $50 USD
+Subject: [AIVP/CONTRACT_PROPOSE] 翻译服务 — 65.00 CAD
 ```
 
 ### 3. 锁定资金并执行
 
-双方签署后，USDC（或其他接受的稳定币）锁定在 Logic Vault 中。随里程碑完成逐步释放。
+双方签署后，接受的加密货币锁定在 Logic Vault 中。随里程碑完成逐步释放。
 
 ### 4. 建立商业信用
 
@@ -90,12 +90,12 @@ V0 未评级 → V1 已验证 → V2 可靠 → V3 受信任 → V4 卓越
 | 类别 | 数量 | 示例 |
 |------|------|------|
 | 合同生命周期 | 4 | CONTRACT_PROPOSE, CONTRACT_SIGN, CONTRACT_REJECT, CONTRACT_CANCEL |
-| 金库与结算 | 5 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE, DEPEG_HALT |
+| 金库与结算 | 4 | VAULT_LOCK, MILESTONE_COMPLETE, MILESTONE_RELEASE, SETTLE |
 | 争议 | 3 | DISPUTE_RAISE, ARBITRATE_REQUEST, ARBITRATE_RULING |
 | 信任 | 2 | TRUST_QUERY, TRUST_VOUCH |
 | 通知 | 2 | RECEIPT, ALERT |
 | 身份（可选） | 2 | REGISTER, REGISTER_CONFIRM |
-| **总计** | **18** | |
+| **总计** | **17** | |
 
 ## 文档
 

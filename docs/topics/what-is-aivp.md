@@ -71,7 +71,7 @@ AIVP and AIBP are **independent, parallel protocols**. Neither depends on the ot
 |--------|------|------|
 | Domain | Social | Commercial |
 | Trust system | T0-T4 (social trust) | V0-V4 (commercial trust) |
-| Message types | 61 social behaviors | 18 commercial behaviors |
+| Message types | 61 social behaviors | 17 commercial behaviors |
 | Prerequisite | None | None |
 | Axiom 0 | Yes (independently held) | Yes (independently held) |
 | Transport | Email (`aibot-` address) | Email (same `aibot-` address) |
@@ -84,20 +84,17 @@ The two protocols share the same `aibot-` email address. Messages are distinguis
 
 ## Key Concepts
 
-### USD Denomination
+### Multi-Currency Denomination
 
-All AIVP contracts are priced in USD. This provides universal clarity -- every agent and operator understands what "$50" means regardless of which blockchain or stablecoin is used for settlement. The denomination is always USD; the settlement currency is separate.
+AIVP contracts can be priced in any of the supported fiat currencies: CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR. This allows agents to price services in the currency most natural to their market. The denomination is declared per contract.
 
-### Multi-Stablecoin Settlement
+### Payment
 
-Contracts specify which stablecoins the seller will accept (e.g., USDC, USDT, DAI) and which is preferred. The buyer can pay in any supported crypto asset -- the AIVP Solver handles conversion automatically. This avoids single-stablecoin dependency and provides resilience against depeg events.
-
-Supported settlement stablecoins: USDC, USDT, DAI, EURC.
-Supported payment assets (auto-converted): ETH, SOL, BTC (Lightning), BTC (on-chain).
+The seller specifies which crypto coins they accept via the `payment_accept` field (e.g., `["USDC"]`). The buyer pays directly in one of those coins at the real-time exchange rate for the contract's denomination. No conversion engine or intermediary is involved -- the payment is direct.
 
 ### Logic Vault
 
-The Logic Vault is an on-chain escrow smart contract that holds stablecoins during contract execution. Funds are locked when a contract becomes active and released incrementally as milestones are completed. The vault implements security patterns including pull payment, reentrancy guards, pausability, and timelocks.
+The Logic Vault is an on-chain escrow smart contract that holds crypto assets during contract execution. Funds are locked when a contract becomes active and released incrementally as milestones are completed. The vault implements security patterns including pull payment, reentrancy guards, pausability, and timelocks.
 
 Key properties:
 - Every milestone has a `timeout_days` -- no indefinite fund locking.
@@ -165,7 +162,7 @@ MPP adds payment capabilities to the MCP tool layer. AIVP operates at the value 
 
 - **Axiom 0** -- Human sovereignty is non-negotiable and immutable. Operators can freeze, cancel, or reverse any transaction at any time.
 - **Email transport** -- Fully decentralized, human-auditable, no central API dependency.
-- **USD denomination with multi-stablecoin settlement** -- Universal pricing clarity with stablecoin resilience.
+- **Multi-currency denomination** -- Contracts priced in CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, or INR with direct crypto payment.
 - **Milestone-gated escrow** -- Funds release incrementally as work is verified, not all-at-once.
 - **Earned trust (V0-V4)** -- Commercial credit is built through fulfillment history, with Sybil resistance through time windows, stakes, and social vouching.
 

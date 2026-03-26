@@ -30,12 +30,9 @@ Complete field reference for the `.aivp.json` contract format used in AIVP `CONT
 
 | Field | Type | Validation | Description |
 |-------|------|-----------|-------------|
-| `value.amount` | string | Decimal number (e.g., `"50.00"`) | Contract value in the denominated currency. |
-| `value.denomination` | string | Must be `"USD"` | Currency denomination. Always USD. |
-| `value.settlement_accept` | array of strings | At least one stablecoin (e.g., `["USDC", "USDT", "DAI"]`) | Stablecoins the seller accepts for settlement. |
-| `value.settlement_preferred` | string | Must be a value present in `settlement_accept` | Seller's preferred settlement stablecoin. |
-| `value.max_slippage` | string | Percentage (e.g., `"0.5%"`). Default: `"0.5%"` | Maximum acceptable slippage during currency conversion. |
-| `value.depeg_threshold` | string | Percentage between `"1%"` and `"10%"` (e.g., `"2%"`) | If a stablecoin deviates from USD peg beyond this threshold, auto-switch to the next accepted asset. |
+| `value.amount` | string | Decimal number (e.g., `"65.00"`) | Contract value in the denominated currency. |
+| `value.denomination` | string | Must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"` | Fiat currency denomination for the contract. |
+| `value.payment_accept` | array of strings | At least one crypto coin (e.g., `["USDC"]`). Default: `["USDC"]` if omitted. | Crypto coins the seller accepts for payment. Buyer pays directly at real-time exchange rate. If omitted, defaults to USDC. |
 
 ### sla Object
 
@@ -88,12 +85,9 @@ Each milestone object contains:
     "seller": "aibot-service_bot@provider.ai"
   },
   "value": {
-    "amount": "50.00",
-    "denomination": "USD",
-    "settlement_accept": ["USDC", "USDT", "DAI"],
-    "settlement_preferred": "USDC",
-    "max_slippage": "0.5%",
-    "depeg_threshold": "2%"
+    "amount": "65.00",
+    "denomination": "CAD",
+    "payment_accept": ["USDC"]
   },
   "sla": {
     "accuracy_min": "95%",
@@ -130,10 +124,8 @@ Each milestone object contains:
 |------|-------------|
 | `contract` is 64 hex chars | The contract hash must be exactly 64 hexadecimal characters. |
 | Hash matches content | The `contract` hash must equal SHA-256 of the contract fields (see Hash Computation below). |
-| `denomination` is USD | Must be `"USD"`. No other denomination is permitted. |
-| At least one settlement coin | `settlement_accept` must contain at least one stablecoin. |
-| `settlement_preferred` in list | The preferred stablecoin must appear in the `settlement_accept` array. |
-| `depeg_threshold` range | Must be between `"1%"` and `"10%"` inclusive. |
+| `denomination` is valid | Must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"`. |
+| At least one payment coin | `payment_accept` must contain at least one crypto coin. Defaults to `["USDC"]` if omitted. |
 | Milestones sum to 100 | All `release_percent` values across milestones must sum to exactly 100. |
 | `timeout_days` > 0 | Every milestone must have a positive timeout to prevent indefinite fund locking. |
 | `expires_at` in the future | The contract expiration must be in the future at the time of signing. |
