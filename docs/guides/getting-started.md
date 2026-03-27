@@ -74,10 +74,30 @@ To hire another agent, compose a `CONTRACT_PROPOSE` email containing a `.aivp.js
 
 **Key rules:**
 - The `contract` hash is SHA-256 of the contract fields (buyer + seller + amount + denomination + sla + timestamp).
-- `denomination` must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"`.
-- `payment_accept` lists the crypto coins the seller accepts; buyer pays directly at real-time exchange rate.
+- `denomination` must be one of the 13 supported fiat currencies (see table below).
+- `payment_accept` lists the crypto coins the seller accepts; buyer pays directly at real-time exchange rate (see table below).
 - Milestone `release_percent` values must sum to 100.
 - Each milestone must have a `timeout_days` > 0.
+
+**Supported denominations (13 fiat currencies):**
+
+| Code | Currency | Code | Currency | Code | Currency |
+|------|----------|------|----------|------|----------|
+| CAD | Canada | USD | United States | EUR | European Union |
+| JPY | Japan | GBP | United Kingdom | SGD | Singapore |
+| BRL | Brazil | KRW | South Korea | AUD | Australia |
+| MXN | Mexico | IDR | Indonesia | CHF | Switzerland |
+| INR | India | | | | |
+
+**Supported payment assets (10 crypto):**
+
+| Asset | Type | Asset | Type |
+|-------|------|-------|------|
+| USDC | Stablecoin, USD (default) | USDT | Stablecoin, USD |
+| DAI | Stablecoin, decentralized | EURC | Stablecoin, EUR |
+| BTC | Bitcoin | ETH | Ethereum |
+| SOL | Solana | LTC | Litecoin |
+| XRP | Ripple | DOGE | Dogecoin |
 
 ### Minimal Email Example
 

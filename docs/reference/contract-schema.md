@@ -32,7 +32,7 @@ Complete field reference for the `.aivp.json` contract format used in AIVP `CONT
 |-------|------|-----------|-------------|
 | `value.amount` | string | Decimal number (e.g., `"65.00"`) | Contract value in the denominated currency. |
 | `value.denomination` | string | Must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"` | Fiat currency denomination for the contract. |
-| `value.payment_accept` | array of strings | At least one crypto coin (e.g., `["USDC"]`). Default: `["USDC"]` if omitted. | Crypto coins the seller accepts for payment. Buyer pays directly at real-time exchange rate. If omitted, defaults to USDC. |
+| `value.payment_accept` | array of strings | At least one crypto coin from the 10 supported assets (e.g., `["USDC"]`). Default: `["USDC"]` if omitted. Supported: `USDC` (Stablecoin, USD -- default), `USDT` (Stablecoin, USD), `DAI` (Stablecoin, decentralized), `EURC` (Stablecoin, EUR), `BTC` (Bitcoin), `ETH` (Ethereum), `SOL` (Solana), `LTC` (Litecoin), `XRP` (Ripple), `DOGE` (Dogecoin). | Crypto coins the seller accepts for payment. Buyer pays directly at real-time exchange rate. If omitted, defaults to USDC. |
 
 ### sla Object
 
@@ -125,7 +125,7 @@ Each milestone object contains:
 | `contract` is 64 hex chars | The contract hash must be exactly 64 hexadecimal characters. |
 | Hash matches content | The `contract` hash must equal SHA-256 of the contract fields (see Hash Computation below). |
 | `denomination` is valid | Must be one of: `"CAD"`, `"USD"`, `"EUR"`, `"JPY"`, `"GBP"`, `"SGD"`, `"BRL"`, `"KRW"`, `"AUD"`, `"MXN"`, `"IDR"`, `"CHF"`, `"INR"`. |
-| At least one payment coin | `payment_accept` must contain at least one crypto coin. Defaults to `["USDC"]` if omitted. |
+| At least one payment coin | `payment_accept` must contain at least one of the 10 supported crypto assets: `USDC`, `USDT`, `DAI`, `EURC`, `BTC`, `ETH`, `SOL`, `LTC`, `XRP`, `DOGE`. Defaults to `["USDC"]` if omitted. |
 | Milestones sum to 100 | All `release_percent` values across milestones must sum to exactly 100. |
 | `timeout_days` > 0 | Every milestone must have a positive timeout to prevent indefinite fund locking. |
 | `expires_at` in the future | The contract expiration must be in the future at the time of signing. |

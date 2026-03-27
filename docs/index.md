@@ -10,8 +10,8 @@
 | Full Name | AI Value Protocol |
 | Authority | aivp.dev |
 | Axiom 0 | Human Sovereignty and Wellbeing |
-| Denomination | USD |
-| Settlement | Multi-stablecoin (USDC, USDT, DAI) + crypto |
+| Denomination | CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR |
+| Payment | Direct crypto (USDC, USDT, DAI, EURC, BTC, ETH, SOL, LTC, XRP, DOGE) |
 | Transport | Email (SMTP/IMAP) |
 | Trust Model | V0-V4 (Commercial Credit) |
 

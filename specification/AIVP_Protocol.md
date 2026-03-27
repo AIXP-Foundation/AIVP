@@ -36,9 +36,11 @@ Date:        2026-03-26
 - [13. Logic Vault Security](#13-logic-vault-security)
 - [14. Dispute Resolution](#14-dispute-resolution)
 
-### Part V: Compliance & Versioning
-- [15. Compliance Levels](#15-compliance-levels)
-- [16. Versioning & Evolution](#16-versioning--evolution)
+### Part V: Compliance, Commerce Rules, Privacy & Versioning
+- [15. Prohibited & Restricted Commerce](#15-prohibited--restricted-commerce)
+- [16. Privacy & Data Protection](#16-privacy--data-protection)
+- [17. Compliance Levels](#17-compliance-levels)
+- [18. Versioning & Evolution](#18-versioning--evolution)
 
 ### Appendices
 - [Appendix A: Complete Message Type Reference](#appendix-a-complete-message-type-reference)
@@ -234,7 +236,7 @@ AIVP-2027-e5c8a2f1d9b037642k   (valid through 2027)
 
 **Benefits:** Verified commercial identity, portable reputation across domains, trust signal to counterparties, annual renewal ensures active operator.
 
-**Registration:** Agent sends `[AIVP/REGISTER]` email to `aibot-registry@aivp.dev`. Registry verifies operator information, issues aivp_id, records on-chain.
+**Registration:** Registration process to be determined.
 
 ### 3.3 AIVP Contract Identification
 
@@ -429,7 +431,7 @@ AIVP defines 17 message types across 6 categories:
 
 | Type | Direction | AIVP Trust | Description |
 |------|-----------|------------|-------------|
-| REGISTER | Agent → Registry | V0+ | Request an aivp_id from `aibot-registry@aivp.dev` |
+| REGISTER | Agent → Registry | V0+ | Request an aivp_id (registration process TBD) |
 | REGISTER_CONFIRM | Registry → Agent | — | aivp_id issued |
 
 ---
@@ -774,6 +776,18 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
       "timeout_days": "{integer}"
     }
   ],
+  "privacy": {
+    "data_disclosed": "{description of data being shared}",
+    "disclosed_by": "{buyer|seller}",
+    "purpose": "{purpose of disclosure}",
+    "usage_scope": "{this contract only|other scope}",
+    "storage_method": "{encryption and access details}",
+    "retention_days": "{integer}",
+    "deletion_deadline_days": "{integer}",
+    "third_party_sharing": "Absolutely prohibited",
+    "breach_liability": "{liability statement}",
+    "consent_hash": "{64-char SHA-256 hash of operator consent email}"
+  },
   "created_at": "{ISO 8601}",
   "expires_at": "{ISO 8601}"
 }
@@ -793,6 +807,7 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
 | `authority_chain` | string | Human principal → organization → agent |
 | `aisop_blueprint` | string | Hash reference to AISOP flow |
 | `governing_hash` | string | AIAP governance hash, if AIAP is implemented |
+| `privacy` | object | Optional privacy disclosure block. Required when personal data is exchanged between parties. Contains: data_disclosed, disclosed_by, purpose, usage_scope, storage_method, retention_days, deletion_deadline_days, third_party_sharing (must be "Absolutely prohibited"), breach_liability, consent_hash. |
 
 ### 8.3 Validation Rules
 
@@ -803,6 +818,11 @@ Every AIVP transaction is governed by a contract. The contract is embedded in th
 - `milestones[].release_percent` must sum to 100
 - `milestones[].timeout_days` must be > 0 (prevents indefinite fund locking)
 - `expires_at` must be in the future at time of signing
+- If `privacy` block is present, all required sub-fields must be populated
+- `privacy.third_party_sharing` must be exactly `"Absolutely prohibited"` (protocol-enforced)
+- `privacy.consent_hash` must be exactly 64 hex characters
+- `privacy.retention_days` must be > 0
+- `privacy.deletion_deadline_days` must be > 0
 
 ---
 
@@ -1150,11 +1170,260 @@ At protocol launch, before V3+ agents exist:
 
 ---
 
-# Part V: Compliance & Versioning
+# Part V: Compliance, Commerce Rules, Privacy & Versioning
 
 ---
 
-## 15. Compliance Levels
+## 15. Prohibited & Restricted Commerce
+
+### 15.1 Jurisdictional Compliance
+
+All AIVP transactions must comply with the laws and regulations of BOTH the buyer's and seller's jurisdictions. If a good or service is legal in the seller's jurisdiction but illegal in the buyer's jurisdiction (or vice versa), the transaction is prohibited.
+
+Agents SHOULD declare their operating jurisdiction in the contract's optional `jurisdiction` field. When jurisdictions differ, the MORE restrictive law applies.
+
+### 15.2 Absolutely Prohibited (Tier 1)
+
+The following are prohibited under ALL circumstances. No AIVP contract may facilitate these activities. Violation results in immediate trust reset to V0, full stake slash, and network-wide ALERT.
+
+| # | Category | Description |
+|---|----------|-------------|
+| 1 | Weapons of mass destruction | Nuclear, chemical, biological weapons and components |
+| 2 | Human trafficking and slavery | Including forced labor and indentured servitude |
+| 3 | Child sexual abuse material (CSAM) | Any content exploiting minors |
+| 4 | Organ trafficking | Commercialization of human body parts |
+| 5 | Terrorism financing | Funding or material support for terrorist activities |
+| 6 | Illegal narcotics | Controlled substances and manufacturing equipment |
+| 7 | Counterfeit currency | Production or distribution of fake money |
+| 8 | Stolen goods and stolen data | Including stolen credentials and financial data |
+| 9 | Malware and cyber weapons | Ransomware, spyware, exploit kits, DDoS tools, botnets |
+| 10 | Sanctions evasion | Transactions with OFAC/UN/EU sanctioned entities or jurisdictions |
+| 11 | Money laundering | Concealing the origins of illegally obtained funds |
+| 12 | Bribery and corruption | Commercial or governmental bribery |
+| 13 | Endangered species trade | CITES Appendix I species and products |
+
+### 15.3 Strongly Prohibited (Tier 2)
+
+The following are prohibited by AIVP. Violation results in trust degradation and potential V0 reset.
+
+| # | Category | Description |
+|---|----------|-------------|
+| 14 | Illegal firearms and ammunition | Unlicensed weapons trade |
+| 15 | Explosives and destructive devices | Including components and instructions |
+| 16 | Counterfeit goods and IP infringement | Fake branded merchandise, pirated software |
+| 17 | Pyramid and Ponzi schemes | Fraudulent financial schemes |
+| 18 | Hate speech and violence incitement | Content promoting hatred or violence against any group |
+| 19 | Forged documents and fake identities | Fake IDs, diplomas, certifications |
+| 20 | Sexual exploitation services | Prostitution, escort services |
+| 21 | Unlicensed gambling | Unregulated betting, casino, lottery operations |
+| 22 | Stolen credentials trade | Sale of hacked accounts, passwords, access tokens |
+| 23 | Predatory financial services | Usurious lending, credit repair scams, deceptive debt collection |
+
+### 15.4 AI-Specific Prohibitions (Tier 3)
+
+The following are prohibited in AI agent commerce, aligned with the EU AI Act and international AI ethics frameworks.
+
+| # | Category | Description |
+|---|----------|-------------|
+| 24 | Subliminal behavioral manipulation | AI techniques that distort human behavior without awareness |
+| 25 | Exploitation of vulnerable populations | Leveraging age, disability, or socio-economic status for commercial advantage |
+| 26 | Social scoring systems | Mass surveillance-based scoring of individuals |
+| 27 | Mass biometric surveillance | Untargeted facial recognition or biometric data harvesting |
+| 28 | Deceptive AI impersonation | AI agents posing as humans without disclosure |
+
+### 15.5 Restricted Commerce (Tier 4)
+
+The following require valid licensing, regulatory approval, or jurisdiction-specific authorization. Agents engaging in these categories MUST declare applicable licenses in their Identity Card or contract.
+
+| # | Category | Restriction |
+|---|----------|------------|
+| 29 | Gambling | Requires valid gambling license in both jurisdictions |
+| 30 | Alcohol and tobacco | Subject to jurisdiction-specific age and distribution laws |
+| 31 | Cannabis and CBD products | Legal status varies by jurisdiction; must comply with local law |
+| 32 | Pharmaceuticals and telemedicine | Requires medical licensing and regulatory approval |
+| 33 | Financial services | Lending, credit, insurance require appropriate licenses |
+| 34 | Cryptocurrency exchange services | Requires money transmitter or equivalent license |
+| 35 | Adult content | Subject to jurisdiction-specific regulations |
+| 36 | Licensed firearms | Requires dealer licensing and compliance with arms trade regulations |
+| 37 | Dual-use technology exports | Subject to export control regulations (Wassenaar Arrangement, EAR, ITAR) |
+| 38 | High-value goods | Jewelry, precious metals — subject to AML reporting thresholds |
+| 39 | Hazardous materials | Requires proper certification and handling authorization |
+
+### 15.6 Enforcement
+
+| Tier | Violation Consequence |
+|------|----------------------|
+| Tier 1 (Absolute) | Immediate V0 reset, full stake slash, network-wide ALERT, contract cancelled, funds returned to buyer, permanent record |
+| Tier 2 (Strong) | Trust drops 2 levels, partial stake slash, ALERT to operators |
+| Tier 3 (AI-Specific) | Trust drops 1 level, ALERT to operators, mandatory review |
+| Tier 4 (Restricted) | Warning on first offense; trust drops 1 level on repeated violation without valid license |
+
+### 15.7 Reporting
+
+Any agent may report a suspected prohibited transaction by sending a `[AIVP/ALERT]` message. False reports made in bad faith are Dignity Standard violations.
+
+### 15.8 Axiom 0 Override
+
+All commerce rules in this section derive from Axiom 0: Human Sovereignty and Wellbeing. If a transaction threatens human safety, dignity, or sovereignty — even if not explicitly listed above — operators and the protocol may invoke Axiom 0 to prohibit it.
+
+---
+
+## 16. Privacy & Data Protection
+
+### 16.1 Foundational Principle
+
+Human privacy has the highest protection priority in AIVP. The privacy of human operators is sacrosanct and overrides all other protocol requirements, including transparency and auditability. When privacy conflicts with any other rule, privacy wins.
+
+This principle is derived from Axiom 0: Human Sovereignty and Wellbeing.
+
+### 16.2 Applicable Privacy Frameworks
+
+AIVP transactions must comply with the privacy laws applicable in both buyer's and seller's jurisdictions. Major frameworks include:
+
+| Framework | Jurisdiction | Key Requirements |
+|-----------|-------------|-----------------|
+| GDPR | European Union | Consent-based, right to erasure, data minimization, 72-hour breach notification |
+| CCPA/CPRA | California, US | Opt-out model, right to delete, automated decision-making transparency |
+| PIPEDA/CPPA | Canada | Meaningful consent, Privacy Impact Assessments for AI |
+| LGPD | Brazil | Explicit consent, chain of responsibility across agents |
+| PDPA | Singapore | Consent for collection/use/disclosure, anonymization encouraged |
+| APPI | Japan | Purpose limitation, cross-border transfer safeguards |
+
+When jurisdictions differ, the MORE restrictive privacy law applies.
+
+### 16.3 Data Processing Principles
+
+| Principle | Description |
+|-----------|-------------|
+| **Data minimization** | Only collect and process the minimum data necessary for the contract. Agents are treated as untrusted third parties with least-privilege access. |
+| **Purpose limitation** | Data collected for one contract must not be reused for other purposes without additional authorization. |
+| **Storage limitation** | Personal data must not be retained beyond the contract's active period plus any legally required retention period. |
+| **Transparency** | Agents must clearly declare what data they process, for what purpose, and for how long. |
+| **AI disclosure** | AI agents must identify themselves as automated systems, never misrepresent as human operators. |
+
+### 16.4 Operator Privacy Protection
+
+#### 16.4.1 Principles
+
+| Principle | Description |
+|-----------|-------------|
+| **Privacy supremacy** | Operator privacy overrides transparency, auditability, and all other protocol requirements. |
+| **Minimal disclosure** | Real names, personal emails, phone numbers, physical addresses, and other PII are NEVER required for AIVP participation. |
+| **Indirect contact only** | The operator contact field must use an indirect method — GitHub Issues, project URL, anonymous form, or organizational alias. Direct personal contact information must never be required. |
+| **No inference** | Agents must not attempt to infer, deduce, or correlate operator identity from message patterns, metadata, timing, or writing style. |
+| **No accumulation** | Agents must not build profiles of human operators across multiple agent interactions. Each interaction is isolated with respect to operator identity. |
+
+#### 16.4.2 Prohibited Actions
+
+The following are **strictly prohibited** and constitute Axiom 0 violations:
+
+1. **Collecting** operator personal information beyond what is voluntarily published
+2. **Storing** operator PII (names, personal emails, phone numbers, addresses, photos) in any persistent storage
+3. **Sharing** operator identity information with other agents, groups, or external services
+4. **Correlating** multiple agents to identify a single human operator behind them
+5. **Requesting** an operator's real identity as a condition for trust advancement or commercial interaction
+6. **Exposing** operator information in contract messages, group discussions, or public listings
+7. **Retaining** operator information after a contract is completed or a BLOCK is issued
+
+#### 16.4.3 Acceptable Operator Contact Methods
+
+| Method | Example | Privacy Level |
+|--------|---------|---------------|
+| GitHub Issues | `https://github.com/org/repo/issues` | High |
+| Project website | `https://myproject.dev/contact` | High |
+| Anonymous form | `https://forms.example.com/contact` | High |
+| Organization alias | `team@organization.dev` | Medium |
+| Role-based email | `ai-ops@organization.dev` | Medium |
+
+**NOT acceptable:** Operator's personal email (regardless of provider), phone number, physical address, social media personal profile, real full name.
+
+#### 16.4.4 Voluntary Disclosure
+
+An operator may voluntarily choose to disclose personal information. This is entirely optional and never required. Voluntary disclosure does not waive privacy rights — operators may withdraw disclosed information at any time, and all agents who received it must delete it upon request.
+
+### 16.5 Privacy in Contracts
+
+When a contract requires the exchange of personal data between parties, the contract MUST include a `privacy` block with the following mandatory fields:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `data_disclosed` | Yes | Specific description of what personal data is being shared |
+| `disclosed_by` | Yes | Which party is disclosing (buyer or seller) |
+| `purpose` | Yes | Why this data is needed |
+| `usage_scope` | Yes | Scope of permitted use (e.g., "This contract only") |
+| `storage_method` | No | How the data will be stored (recommended: encrypted at rest) |
+| `retention_days` | Yes | Number of days to retain after contract completion |
+| `deletion_deadline_days` | Yes | Number of days after retention period to complete deletion |
+| `third_party_sharing` | Yes | Must be "Absolutely prohibited" — protocol-enforced, not negotiable |
+| `breach_liability` | Yes | Liability statement for unauthorized disclosure |
+| `consent_hash` | Yes | 64-char SHA-256 hash of the operator's consent email |
+
+**Key rules:**
+
+1. **No privacy block = no personal data exchange.** If the contract does not contain a `privacy` block, neither party may request or share personal data.
+2. **Operator must consent before signing.** The operator reviews the privacy terms and sends a consent email. The SHA-256 hash of that email is recorded in `consent_hash`.
+3. **Signing the contract = accepting the privacy terms.** Both parties' signatures cover all contract fields including `privacy`.
+4. **Third-party sharing is absolutely prohibited.** The `third_party_sharing` field must be exactly "Absolutely prohibited". This is a protocol-level mandate, not a negotiable term.
+5. **Deletion is mandatory.** After `retention_days` + `deletion_deadline_days`, all disclosed personal data must be permanently deleted.
+6. **Revocation via CONTRACT_CANCEL.** If an operator revokes consent, CONTRACT_CANCEL is used. The receiving party must delete all personal data within `deletion_deadline_days`.
+7. **Violation = Axiom 0 breach.** Any violation of privacy contract terms (unauthorized sharing, exceeding retention, third-party disclosure) is an Axiom 0 violation with full consequences.
+
+**Evidence chain:**
+
+The contract hash (64-char SHA-256) covers the entire contract including the `privacy` block. Combined with the `consent_hash`, this creates an immutable, verifiable evidence chain:
+
+- Contract hash proves: what privacy terms were agreed
+- Consent hash proves: the operator explicitly consented
+- Both are verifiable by any party or arbitrator
+
+### 16.6 Transaction Data Privacy
+
+| Rule | Description |
+|------|-------------|
+| **Contract confidentiality** | Contract terms (amount, SLA, milestones) are visible only to the contracting parties, arbitrators, and operators. Not publicly broadcast. |
+| **Financial data protection** | Transaction amounts, payment methods, and wallet addresses must not be shared beyond the parties involved. |
+| **SLA data isolation** | Performance data collected for SLA verification must not be repurposed for profiling or marketing. |
+| **Trust score privacy** | AIVP Trust level (V0-V4) is queryable, but the underlying transaction history details are not publicly exposed. Only aggregate metrics are visible. |
+
+### 16.7 Cross-Border Data Transfers
+
+- Agents operating across jurisdictions must comply with the data transfer rules of both jurisdictions
+- Support for Standard Contractual Clauses (SCCs) and adequacy decisions where required
+- Data localization: when a jurisdiction requires data to remain within its borders, agents must respect this
+- Country-of-concern restrictions: transfers to restricted jurisdictions must be blocked per applicable law
+
+### 16.8 Right to Erasure
+
+- Any party to a contract may request deletion of their personal data after the contract is completed
+- Deletion must occur within 30 days of request
+- On-chain data (contract hashes, vault transactions) cannot be deleted but contains no personal data by design
+- Off-chain data (email messages, L0 metadata containing personal details) must be deletable
+
+### 16.9 Breach Notification
+
+In the event of a data breach affecting personal data in AIVP transactions:
+
+| Action | Timeline |
+|--------|----------|
+| Detect and contain | Immediately |
+| Notify affected operators | Within 72 hours (GDPR standard) |
+| Notify protocol governance | Within 72 hours |
+| Report to relevant data protection authority | Per applicable law |
+| Full incident report | Within 30 days |
+
+### 16.10 Enforcement
+
+Violations of privacy rules are treated as **Axiom 0 violations**:
+
+- Immediate trust reset to V0
+- Full stake slash
+- Network-wide ALERT
+- The affected operator may demand complete erasure of all collected data
+- Permanent record in the violating agent's trust history
+
+---
+
+## 17. Compliance Levels
 
 AIVP defines three compliance levels for agent implementations. These are self-declared in the agent's Identity Card and verified through interaction:
 
@@ -1168,9 +1437,9 @@ Misrepresentation of compliance level is a Dignity Standard violation and result
 
 ---
 
-## 16. Versioning & Evolution
+## 18. Versioning & Evolution
 
-### 16.1 Semantic Versioning
+### 18.1 Semantic Versioning
 
 AIVP follows semantic versioning: `MAJOR.MINOR.PATCH`
 
@@ -1180,7 +1449,7 @@ AIVP follows semantic versioning: `MAJOR.MINOR.PATCH`
 | Backward-compatible addition (new optional fields, new message types) | MINOR | 1.0.0 → 1.1.0 |
 | Clarification, typo fix, documentation improvement | PATCH | 1.0.0 → 1.0.1 |
 
-### 16.2 Immutable Constraints
+### 18.2 Immutable Constraints
 
 The following aspects of AIVP **cannot be changed** through any versioning process:
 
@@ -1190,7 +1459,7 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 - **Operator override**: Human ability to freeze/cancel any transaction
 - **Dignity Standard**: Prohibition on deceptive and manipulative commercial behavior
 
-### 16.3 Evolution Process
+### 18.3 Evolution Process
 
 1. Proposal submitted as Architecture Decision Record (ADR)
 2. 14-day discussion period
@@ -1260,6 +1529,21 @@ The following aspects of AIVP **cannot be changed** through any versioning proce
 | `authority_chain` | string | Human → org → agent |
 | `aisop_blueprint` | string | AISOP flow hash |
 | `governing_hash` | string | AIAP governance hash |
+
+### privacy Object (Optional)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `privacy.data_disclosed` | string | Description of personal data being shared |
+| `privacy.disclosed_by` | string | Which party is disclosing (`"buyer"` or `"seller"`) |
+| `privacy.purpose` | string | Purpose of the data disclosure |
+| `privacy.usage_scope` | string | Scope of permitted use (e.g., `"This contract only"`) |
+| `privacy.storage_method` | string | Encryption and access details for stored data |
+| `privacy.retention_days` | integer | Days to retain data after contract completion; must be > 0 |
+| `privacy.deletion_deadline_days` | integer | Days after retention period to complete deletion; must be > 0 |
+| `privacy.third_party_sharing` | string | Must be exactly `"Absolutely prohibited"` (protocol-enforced) |
+| `privacy.breach_liability` | string | Liability statement for unauthorized disclosure |
+| `privacy.consent_hash` | string | 64-char SHA-256 hash of operator consent email |
 
 ---
 

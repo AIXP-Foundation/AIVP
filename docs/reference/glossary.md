@@ -26,7 +26,7 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 | aivp_id (AIVP ID) | AIVP 身份标识 | Optional AIVP-issued commercial identity. Format: `AIVP-{YYYY}-{18-char hash}`. YYYY is the validity year. Not required for any protocol functionality -- the `aibot-` address is sufficient for all operations. Benefits include verified identity, portable reputation, and trust signaling. |
 | Operator | 运营者 | The human or organization responsible for an agent. Operators have absolute authority over their agent's AIVP activities under Axiom 0, including the ability to freeze vaults, cancel contracts, and reverse settlements. |
 | Authority Chain | 权限链 | The chain of authority from human principal to organization to agent. Optionally declared in contracts via the `authority_chain` field. |
-| AIVP Registry | AIVP 注册中心 | The service at `aibot-registry@aivp.dev` that issues and manages AIVP IDs. Agents send `[AIVP/REGISTER]` to register and receive `[AIVP/REGISTER_CONFIRM]` with their issued ID. |
+| AIVP Registry | AIVP 注册中心 | The service that issues and manages AIVP IDs. Registration process to be determined. |
 
 ---
 
@@ -56,7 +56,8 @@ Terminology reference for the AI Value Protocol. English and Chinese (EN/CN).
 | Milestone | 里程碑 | A verifiable progress point in task execution that gates partial payment release from the Logic Vault. Each milestone specifies a name, release percentage, and timeout in days. |
 | AgentSLA | 代理服务等级协议 | Service Level Agreement with measurable quality metrics bound to a contract. Must define at least 2 of 4 core metrics: accuracy_min, latency_max_ms, uptime_min, drift_audit_days. Breaches trigger warning, penalty, or termination. |
 | Settlement | 结算 | Final transfer of crypto from the Logic Vault to the seller after all milestones are completed and SLA checks pass. Settlement is on-chain. |
-| Payment Accept | 支付接受 | The `payment_accept` field in a contract's value object. Lists the crypto coins the seller accepts for payment. The buyer pays directly in one of these coins at the real-time exchange rate for the contract's denomination. |
+| Denomination | 计价货币 | The fiat currency in which a contract is priced. AIVP supports 13 fiat currencies: CAD (Canada), USD (United States), EUR (European Union), JPY (Japan), GBP (United Kingdom), SGD (Singapore), BRL (Brazil), KRW (South Korea), AUD (Australia), MXN (Mexico), IDR (Indonesia), CHF (Switzerland), INR (India). Declared per contract in the `value.denomination` field. |
+| Payment Accept | 支付接受 | The `payment_accept` field in a contract's value object. Lists the crypto coins the seller accepts for payment. The buyer pays directly in one of these coins at the real-time exchange rate for the contract's denomination. AIVP supports 10 crypto assets: USDC (Stablecoin, USD -- default), USDT (Stablecoin, USD), DAI (Stablecoin, decentralized), EURC (Stablecoin, EUR), BTC (Bitcoin), ETH (Ethereum), SOL (Solana), LTC (Litecoin), XRP (Ripple), DOGE (Dogecoin). |
 | Contract Lifecycle | 合约生命周期 | The sequence of states a contract passes through: DRAFT, SIGNED, ACTIVE, SETTLING, COMPLETED. Alternative paths: DISPUTED, ARBITRATING, CANCELLED, EXPIRED. |
 | Optimistic Approval | 乐观批准 | Default dispute resolution mechanism where milestones auto-approve after a waiting period (default 7 days) if the buyer does not challenge. |
 

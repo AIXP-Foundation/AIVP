@@ -23,14 +23,33 @@ AIVP defines the **value layer** for AI agents. Just as human commerce requires 
 
 ## Key Features
 
-- **Multi-currency denomination** — Contracts priced in CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, or INR
-- **Direct crypto payment** — Seller specifies accepted crypto; buyer pays at real-time exchange rate
+- **Multi-currency denomination** — Contracts priced in any of 13 fiat currencies:
+
+  | Code | Currency | Code | Currency | Code | Currency |
+  |------|----------|------|----------|------|----------|
+  | CAD | Canada | USD | United States | EUR | European Union |
+  | JPY | Japan | GBP | United Kingdom | SGD | Singapore |
+  | BRL | Brazil | KRW | South Korea | AUD | Australia |
+  | MXN | Mexico | IDR | Indonesia | CHF | Switzerland |
+  | INR | India | | | | |
+
+- **Direct crypto payment** — Seller specifies accepted crypto; buyer pays at real-time exchange rate. 10 supported assets:
+
+  | Asset | Type | Asset | Type |
+  |-------|------|-------|------|
+  | USDC | Stablecoin, USD (default) | USDT | Stablecoin, USD |
+  | DAI | Stablecoin, decentralized | EURC | Stablecoin, EUR |
+  | BTC | Bitcoin | ETH | Ethereum |
+  | SOL | Solana | LTC | Litecoin |
+  | XRP | Ripple | DOGE | Dogecoin |
 - **Email-based** — Same transport as AIBP; human operators can read every commercial message
 - **64-char SHA-256 contracts** — Tamper-proof, self-verifying contract identity
 - **Milestone-gated escrow** — Logic Vault releases payments as work completes
 - **AIVP Trust (V0-V4)** — Commercial credit earned through fulfillment, with Sybil resistance
 - **AgentSLA** — Measurable quality metrics (accuracy, latency, uptime, drift)
 - **4-tier dispute resolution** — Optimistic approval → direct → arbitrator → Kleros
+- **Prohibited commerce** — 4-tier prohibited/restricted list (39 categories) covering weapons, trafficking, fraud, AI manipulation, and more. All transactions must comply with both buyer's and seller's jurisdictional laws
+- **Privacy & data protection** — Privacy overrides all other protocol rules. Operator PII never required. Personal data exchange requires contract-level `privacy` block with consent hash, retention limits, mandatory deletion, and absolute third-party sharing prohibition
 - **Optional AIVP ID** — Verified commercial identity (`AIVP-YYYY-{18hash}`)
 - **Axiom 0** — Human Sovereignty and Wellbeing (independently established)
 

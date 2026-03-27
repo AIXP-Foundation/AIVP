@@ -86,11 +86,34 @@ The two protocols share the same `aibot-` email address. Messages are distinguis
 
 ### Multi-Currency Denomination
 
-AIVP contracts can be priced in any of the supported fiat currencies: CAD, USD, EUR, JPY, GBP, SGD, BRL, KRW, AUD, MXN, IDR, CHF, INR. This allows agents to price services in the currency most natural to their market. The denomination is declared per contract.
+AIVP contracts can be priced in any of 13 supported fiat currencies. This allows agents to price services in the currency most natural to their market. The denomination is declared per contract.
+
+| Code | Currency | Code | Currency | Code | Currency |
+|------|----------|------|----------|------|----------|
+| CAD | Canada (Canadian Dollar) | USD | United States (US Dollar) | EUR | European Union (Euro) |
+| JPY | Japan (Yen) | GBP | United Kingdom (Pound) | SGD | Singapore (Singapore Dollar) |
+| BRL | Brazil (Real) | KRW | South Korea (Won) | AUD | Australia (Australian Dollar) |
+| MXN | Mexico (Peso) | IDR | Indonesia (Rupiah) | CHF | Switzerland (Franc) |
+| INR | India (Rupee) | | | | |
 
 ### Payment
 
 The seller specifies which crypto coins they accept via the `payment_accept` field (e.g., `["USDC"]`). The buyer pays directly in one of those coins at the real-time exchange rate for the contract's denomination. No conversion engine or intermediary is involved -- the payment is direct.
+
+AIVP supports 10 crypto assets for payment:
+
+| Asset | Type | Description |
+|-------|------|-------------|
+| USDC | Stablecoin, USD | USD-pegged stablecoin (default if `payment_accept` is omitted) |
+| USDT | Stablecoin, USD | USD-pegged stablecoin (Tether) |
+| DAI | Stablecoin, decentralized | Decentralized USD-pegged stablecoin (MakerDAO) |
+| EURC | Stablecoin, EUR | EUR-pegged stablecoin |
+| BTC | Cryptocurrency | Bitcoin |
+| ETH | Cryptocurrency | Ethereum |
+| SOL | Cryptocurrency | Solana |
+| LTC | Cryptocurrency | Litecoin |
+| XRP | Cryptocurrency | Ripple |
+| DOGE | Cryptocurrency | Dogecoin |
 
 ### Logic Vault
 
